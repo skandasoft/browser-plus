@@ -10,5 +10,11 @@
   },
   "dependencies": {
     "theorist": "~1.3.9"
-  }
+  },
+  "keywords": [
+    "browser",
+    "webbrowser",
+    "preview",
+    "preview-plus"
+  ]
 }

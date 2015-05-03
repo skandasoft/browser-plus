@@ -1,5 +1,5 @@
 # browser-plus package
 
-A short description of your package.
+Real Browser in ATOM
 
-![A screenshot of your package](https://f.cloud.github.com/assets/69169/2290250/c35d867a-a017-11e3-86be-cd7c5bf3ff9b.gif)
+-[![Browser-Plus](https://raw.github.com/skandasoft/browser-plus/master/browser.gif)]
