@@ -1,0 +1,18 @@
+#bp-selector-top, #bp-selector-bottom {
+	background: yellow;
+	height:3px;
+	position: fixed;
+	transition:all 300ms ease;
+	z-index:9999;
+}
+#bp-selector-left, #bp-selector-right {
+	background: yellow;
+	width:3px;
+	position: fixed;
+	transition:all 300ms ease;
+	z-index:9999;
+}
+
+.n{
+ -webkit-transform: scale(3) translateX(100px)
+}

@@ -1,0 +1,9 @@
+# See https://atom.io/docs/latest/creating-a-package#menus for more details
+'context-menu':
+  'atom-text-editor': [
+    {
+      'label': 'Open browser-plus'
+      'command': 'browser-plus:open'
+    }
+
+  ]
