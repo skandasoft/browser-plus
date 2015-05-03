@@ -1,7 +1,7 @@
 {
   "name": "browser-plus",
   "main": "./lib/browser-plus",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Browser Plus",
   "repository": "https://github.com/atom/browser-plus",
   "license": "MIT",
