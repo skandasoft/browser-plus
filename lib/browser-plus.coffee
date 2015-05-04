@@ -30,7 +30,7 @@ module.exports = BrowserPlus =
       if ( path.extname(uri) is '.htmlp' or
           uri.indexOf('http:') is 0 or uri.indexOf('https:') is 0 or
           uri.indexOf('localhost') is 0 or uri.indexOf('file:') is 0 or
-          uri.indexOf('browser-plus:') is 0 ) or opt.src
+          uri.indexOf('browser-plus:') is 0 ) #or opt.src
          bp = new BrowserPlusModel @,uri,opt.src
          if uri.indexOf('browser-plus://history') is 0
            bp.on 'destroyed', =>
