@@ -1,4 +1,4 @@
-{Disposable,Emitter,$, $$,$$$} = require 'atom'
+{Disposable,Emitter} = require 'atom'
 {Model} = require 'theorist'
 # {CompositeDisposable, Emitter} = require 'event-kit'
 path = require 'path'
