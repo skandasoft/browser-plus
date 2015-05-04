@@ -13,7 +13,11 @@ class BrowserPlusView extends View
     if (url  = params.uri).indexOf('browser-plus://history') >= 0
       resources = "#{atom.packages.getActivePackage('browser-plus').path}/resources/"
       url = "file://#{resources}history.html"
-    url = "data:text/html, #{params.src}" if params.src
+    if params.src
+      if params.src.includes "data:text/html,"
+        url = params.src
+      else
+        url = "data:text/html, #{params.src}"
 
     @div class:'browser-plus', =>
       @div class:'uri native-key-bindings', =>
