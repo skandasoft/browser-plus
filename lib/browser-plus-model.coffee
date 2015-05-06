@@ -23,7 +23,7 @@ module.exports =
     getTitle: ->
       @title or path.basename(@uri)
 
-    getUri: ->
+    getURI: ->
       if @src?.includes('data:text/html,')
         # regex = new RegExp("<bp-uri>([\\s\\S]*?)</bp-uri>")
         regex = /<meta\s?\S*?\s?bp-uri=['"](.*?)['"]\S*\/>/
