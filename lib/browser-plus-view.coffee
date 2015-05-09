@@ -272,6 +272,7 @@ class BrowserPlusView extends View
             setTimeout =>
               @htmlv[0]?.executeJavaScript @model.browserPlus.CSSjs
               @htmlv[0]?.executeJavaScript @model.browserPlus.Selectorjs
+              @htmlv[0]?.executeJavaScript @model.browserPlus.JQueryjs
               @htmlv[0]?.executeJavaScript @model.browserPlus.js
             ,100      #
 
