@@ -60,7 +60,7 @@ module.exports = BrowserPlus =
     atom.workspace.open uri, split:side
 
   getPosition: ->
-    activePane = atom.workspace.paneForItem atom.workspace.getActiveEditor()
+    activePane = atom.workspace.paneForItem atom.workspace.getActiveTextEditor()
     return unless activePane
     paneAxis = activePane.getParent()
     return unless paneAxis
