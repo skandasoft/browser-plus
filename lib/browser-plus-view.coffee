@@ -39,7 +39,7 @@ class BrowserPlusView extends View
             @input type:'text',id:'uri',outlet:'uri',value:"#{params.uri}" ##{@uri}"
 
       @tag 'webview',class:"native-key-bindings",outlet: 'htmlv'#,preload:"file:///#{srcdir}/resources/browser-plus-client.js"
-      ,nodeintegration:'on',plugins:'on',src:"#{url}", disablewebsecurity:'on'
+      ,nodeintegration:'on',plugins:'on',src:"#{url}", disablewebsecurity:'on', allowfileaccessfromfiles:'on'
 
   initialize: ->
       @subscriptions.add atom.tooltips.add @back, title: 'Back'
@@ -60,6 +60,10 @@ class BrowserPlusView extends View
       else
         Array.observe @model.browserPlus.fav, (ele)=>
           @checkFav()
+
+      @htmlv[0].addEventListener "permissionrequest", (e)->
+        debugger
+        e.request.allow()
 
       @htmlv[0].addEventListener "ipc-message", (evt)=>
         switch evt.channel
