@@ -28,6 +28,7 @@ module.exports = BrowserPlus =
     @Selectorjs = fs.readFileSync "#{resources}selector.js",'utf-8'
 
     atom.workspace.addOpener (uri,opt)=>
+      path = require 'path'
       if ( path.extname(uri) is '.htmlp' or
           uri.indexOf('http:') is 0 or uri.indexOf('https:') is 0 or
           uri.indexOf('localhost') is 0 or uri.indexOf('file:') is 0 or
