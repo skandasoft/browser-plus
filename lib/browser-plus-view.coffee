@@ -216,6 +216,8 @@ class BrowserPlusView extends View
                   url = url.replace(/\\/g,"/")
                 else
                   url = URL.format(urls)
+              else if url.indexOf('localhost') is 0
+                url = url.replace(/localhost:?/,'http://127.0.0.1')
               else
                 urls.protocol = 'http'
                 url = URL.format(urls)
