@@ -63,8 +63,14 @@ class BrowserPlusView extends View
           @checkFav()
 
       @htmlv[0].addEventListener "permissionrequest", (e)->
-        debugger
         e.request.allow()
+
+      @htmlv[0].addEventListener "page-favicon-updated", (e)->
+        debugger
+        
+      @htmlv[0].addEventListener "page-title-set", (e)->
+        debugger
+
 
       @htmlv[0].addEventListener "ipc-message", (evt)=>
         switch evt.channel
