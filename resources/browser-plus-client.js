@@ -10,8 +10,7 @@ if (window['browser-plus'] == null) {
     href: href,
     title: document.title
   });
-  
-  jQ = jQuery
+  jQ = jQuery.noConflict();
   jQ(function() {
     var jQselector, bp, style;
     CSSUtilities.define('async', false);

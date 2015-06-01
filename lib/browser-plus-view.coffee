@@ -37,7 +37,7 @@ class BrowserPlusView extends View
             @span id:'devtool',class:'mega-octicon octicon-tools',outlet:'devtool'
 
           @div class:'input-uri', =>
-            @input type:'text',id:'uri',outlet:'uri',value:"#{params.uri}" ##{@uri}"
+            @input class:"native-key-bindings",type:'text',id:'uri',outlet:'uri',value:"#{params.uri}" ##{@uri}"
 
       @tag 'webview',class:"native-key-bindings",outlet: 'htmlv'#,preload:"file:///#{srcdir}/resources/browser-plus-client.js"
       ,nodeintegration:'on',plugins:'on',src:"#{url}", disablewebsecurity:'on', allowfileaccessfromfiles:'on'
@@ -67,7 +67,7 @@ class BrowserPlusView extends View
 
       @htmlv[0].addEventListener "page-favicon-updated", (e)->
         debugger
-        
+
       @htmlv[0].addEventListener "page-title-set", (e)->
         debugger
 
@@ -142,10 +142,17 @@ class BrowserPlusView extends View
           @liveSubscription.dispose()
 
       @select.on 'click', (evt)=>
+        unless atom.config.get('browser-plus.preview')
+          alert 'change browser-plus config to allow preview'
+          return
+
         @select.toggleClass('active')
         @deActivateSelection()
 
       @thumbs.on 'click', (evt)=>
+        unless atom.config.get('browser-plus.preview')
+          alert 'change browser-plus config to allow preview'
+          return
         return unless @htmlSrc
         cssText = ""
         for className,styl of @css
@@ -275,6 +282,7 @@ class BrowserPlusView extends View
     $(@devtool).toggleClass 'active', !open
 
   startupCheck: ->
+    return unless atom.config.get('browser-plus.preview')
     process.nextTick =>
         if @htmlv?[0]
           if @htmlv[0]?.isWaitingForResponse?()
