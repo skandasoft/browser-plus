@@ -40,7 +40,7 @@ class BrowserPlusView extends View
             @input class:"native-key-bindings",type:'text',id:'uri',outlet:'uri',value:"#{params.uri}" ##{@uri}"
 
       @tag 'webview',class:"native-key-bindings",outlet: 'htmlv'#,preload:"file:///#{srcdir}/resources/browser-plus-client.js"
-      ,nodeintegration:'on',plugins:'on',src:"#{url}", disablewebsecurity:'on', allowfileaccessfromfiles:'on'
+      ,nodeintegration:'on',plugins:'on',src:"#{url}", disablewebsecurity:'on', allowfileaccessfromfiles:'on', allowPointerLock:'on'
 
   initialize: ->
       @subscriptions.add atom.tooltips.add @back, title: 'Back'
@@ -231,7 +231,7 @@ class BrowserPlusView extends View
                 else
                   url = URL.format(urls)
               else if url.indexOf('localhost') is 0
-                url = url.replace(/localhost:?/,'http://127.0.0.1')
+                url = url.replace(/localhost?/,'http://127.0.0.1')
               else
                 urls.protocol = 'http'
                 url = URL.format(urls)
