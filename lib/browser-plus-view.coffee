@@ -222,7 +222,11 @@ class BrowserPlusView extends View
           if url.indexOf(' ') >= 0
             url = "http://www.google.com/search?as_q=#{url}"
           else
-            if url.search(/^localhost/i) < 0 and url.indexOf('.') < 0
+            localhostPattern = ///^
+                                (http://)?
+                                localhost
+                                ///i
+            if url.search(localhostPattern) < 0   and url.indexOf('.') < 0
               url = "http://www.google.com/search?as_q=#{url}"
             else
               if urls.protocol in ['http','https','file:']
@@ -230,8 +234,8 @@ class BrowserPlusView extends View
                   url = url.replace(/\\/g,"/")
                 else
                   url = URL.format(urls)
-              else if url.indexOf('localhost') is 0
-                url = url.replace(/localhost?/,'http://127.0.0.1')
+              else if url.indexOf('localhost') isnt  -1
+                url = url.replace(/localhost/,'http://127.0.0.1')
               else
                 urls.protocol = 'http'
                 url = URL.format(urls)
