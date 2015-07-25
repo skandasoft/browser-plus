@@ -22,6 +22,10 @@ module.exports = BrowserPlus =
       title: 'Allow Preview'
       type: 'boolean'
       default: true
+    live:
+      title: 'Live Refresh in '
+      type: 'number'
+      default: 500
 
   activate: (state) ->
     @history = state.history or []

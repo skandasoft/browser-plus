@@ -135,7 +135,10 @@ class BrowserPlusView extends View
           @liveSubscription = new CompositeDisposable
           @liveSubscription.add atom.workspace.observeTextEditors (editor)=>
                     @liveSubscription.add editor.onDidSave =>
-                        @htmlv?[0]?.executeJavaScript? "location.href = '#{@model.uri}'"
+                        timeout = atom.config.get('browser-plus.live')
+                        setTimeout =>
+                          @htmlv?[0]?.executeJavaScript? "location.href = '#{@model.uri}'"
+                        , timeout
           @model.onDidDestroy =>
             @liveSubscription.dispose()
         else
@@ -249,6 +252,7 @@ class BrowserPlusView extends View
           @htmlv.attr 'src',url
 
       @refresh.on 'click', (evt)=>
+
         @htmlv[0].executeJavaScript "location.href = '#{@model.uri}'"
 
   showDevTool: (evt)->
@@ -301,8 +305,6 @@ class BrowserPlusView extends View
               @htmlv[0]?.executeJavaScript @model.browserPlus.js
             ,100      #
 
-  liveReload: ->
-      @htmlv[0].executeJavaScript "location.href = '#{@model.uri}'"
   checkNav: ->
       $(@forward).toggleClass 'active',@htmlv[0].canGoForward()
       $(@back).toggleClass 'active',@htmlv[0].canGoBack()
