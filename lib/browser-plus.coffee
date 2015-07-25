@@ -40,10 +40,10 @@ module.exports = BrowserPlus =
           uri.indexOf('http:') is 0 or uri.indexOf('https:') is 0 or
           uri.indexOf('localhost') is 0 or uri.indexOf('file:') is 0 or
           uri.indexOf('browser-plus:') is 0 ) #or opt.src
-            localhostPattern = ///^
-                                (http://)?
-                                localhost
-                                ///i
+         localhostPattern = ///^
+                              (http://)?
+                              localhost
+                              ///i
          uri = uri.replace(localhostPattern,'http://127.0.0.1')
          bp = new BrowserPlusModel @,uri,opt.src
          if uri.indexOf('browser-plus://history') is 0
