@@ -17,12 +17,12 @@ module.exports = BrowserPlus =
     homepage:
       title: 'HomePage'
       type: 'string'
-      default: 'http://www.google.com'
+      default: 'http://localhost:3000/' #www.google.com
     preview:
       title: 'Allow Preview'
       type: 'boolean'
       default: true
-      
+
   activate: (state) ->
     @history = state.history or []
     @fav = state.fav or []
@@ -40,7 +40,11 @@ module.exports = BrowserPlus =
           uri.indexOf('http:') is 0 or uri.indexOf('https:') is 0 or
           uri.indexOf('localhost') is 0 or uri.indexOf('file:') is 0 or
           uri.indexOf('browser-plus:') is 0 ) #or opt.src
-         uri = uri.replace('localhost','http://127.0.0.1')
+            localhostPattern = ///^
+                                (http://)?
+                                localhost
+                                ///i
+         uri = uri.replace(localhostPattern,'http://127.0.0.1')
          bp = new BrowserPlusModel @,uri,opt.src
          if uri.indexOf('browser-plus://history') is 0
            bp.on 'destroyed', =>
