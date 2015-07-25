@@ -17,7 +17,7 @@ module.exports = BrowserPlus =
     homepage:
       title: 'HomePage'
       type: 'string'
-      default: 'http://localhost:3000/' #www.google.com
+      default: 'http://www.google.com'
     preview:
       title: 'Allow Preview'
       type: 'boolean'
