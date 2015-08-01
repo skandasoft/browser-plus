@@ -12,7 +12,7 @@ Here are some feature...
 6. Preview
 7. Favorites..
 
--![Browser-Plus](https://raw.github.com/skandasoft/browser-plus/master/browser.gif)]
+-![Browser-Plus](https://raw.github.com/skandasoft/browser-plus/master/browser.gif)
 
 The real user of browser plus is with Navigate package--> https://atom.io/packages/navigate
 
@@ -42,4 +42,6 @@ The browser url can be provided added in the config against the keys. The defaul
   Custom keys(CTRL-F4) can be added against custom url. The word under cursor is available in the search term. So Currently any help for the key words, are provided through devdocs.
 
   Again there is expremental feature to provide selection and preview of the any dom element in the html page. This can be currently used against small dom element.
-  -![Browser-Plus-Preview](https://raw.github.com/skandasoft/browser-plus/master/preview.gif)]
+  -![Browser-Plus-Preview](https://raw.github.com/skandasoft/browser-plus/master/preview.gif)
+
+Note:: The node-integeration is enabled on for the working of this packages.
