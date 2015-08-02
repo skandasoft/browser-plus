@@ -19,7 +19,6 @@ class BrowserPlusView extends View
         url = src
       else
         url = "data:text/html, #{src}"
-
     @div class:'browser-plus', =>
       @div class:'uri native-key-bindings', =>
         @div class: 'nav-btns-left', =>
@@ -32,15 +31,19 @@ class BrowserPlusView extends View
 
         @div class:'nav-btns', =>
           @div class: 'nav-btns-right', =>
+            @span id:'pdf',class:'mega-octicon octicon-file-pdf',outlet: 'pdf'
             @span id:'thumbs',class:'mega-octicon octicon-thumbsup',outlet: 'thumbs'
             @span id:'live',class:'mega-octicon octicon-zap',outlet:'live'
             @span id:'devtool',class:'mega-octicon octicon-tools',outlet:'devtool'
 
           @div class:'input-uri', =>
             @input class:"native-key-bindings",type:'text',id:'uri',outlet:'uri',value:"#{params.uri}" ##{@uri}"
-
-      @tag 'webview',class:"native-key-bindings",outlet: 'htmlv'#,preload:"file:///#{srcdir}/resources/browser-plus-client.js"
-      ,nodeintegration:'on',plugins:'on',src:"#{url}", disablewebsecurity:'on', allowfileaccessfromfiles:'on', allowPointerLock:'on'
+      if atom.config.get('browser-plus.node')
+        @tag 'webview',class:"native-key-bindings",outlet: 'htmlv',
+        nodeintegeration:'on',plugins:'on',src:"#{url}", disablewebsecurity:'on', allowfileaccessfromfiles:'on', allowPointerLock:'on'
+      else
+        @tag 'webview',class:"native-key-bindings",outlet: 'htmlv' ,preload:"file:///#{srcdir}/resources/bp-client.js",
+        plugins:'on',src:"#{url}", disablewebsecurity:'on', allowfileaccessfromfiles:'on', allowPointerLock:'on'
 
   initialize: ->
       @subscriptions.add atom.tooltips.add @back, title: 'Back'
@@ -64,6 +67,24 @@ class BrowserPlusView extends View
 
       @htmlv[0].addEventListener "permissionrequest", (e)->
         e.request.allow()
+
+      @htmlv[0].addEventListener "console-message", (e)=>
+        if e.message.includes('~browser-plus-title~')
+          console.log e.message
+          title = e.message.replace('~browser-plus-title~','')
+          @model.setTitle(title)
+        if e.message.includes('~browser-plus-href~')
+          console.log e.message
+          uri = e.message.replace('~browser-plus-href~','')
+          @uri.val uri
+          @model.uri = uri
+          @select.removeClass 'active'
+          @deActivateSelection()
+          @live.toggleClass 'active',@liveOn
+          @liveSubscription?.dispose() unless @liveOn
+          @checkNav()
+          @checkFav()
+          @addHistory()
 
       @htmlv[0].addEventListener "page-favicon-updated", (e)->
         debugger
@@ -125,6 +146,10 @@ class BrowserPlusView extends View
 
       @devtool.on 'click', (evt)=>
         @toggleDevTool()
+
+      @pdf.on 'click', (evt)=>
+        # @htmlv[0].printToPDF()
+        alert('soon in next verion')
 
       @live.on 'click', (evt)=>
         return if @model.src
@@ -203,7 +228,7 @@ class BrowserPlusView extends View
       # #
       @htmlv[0].addEventListener "did-start-loading", =>
         @htmlv[0].shadowRoot.firstChild.style.height = '95%'
-        @startupCheck()
+        @startupCheck() if atom.config.get('browser-plus.node')
 
       @history.on 'click',(evt)=>
         atom.workspace.open 'browser-plus://history' , {split: 'left',searchAllPanes:true}

@@ -26,6 +26,10 @@ module.exports = BrowserPlus =
       title: 'Live Refresh in '
       type: 'number'
       default: 500
+    node:
+      title: 'Node Integeration '
+      type: 'boolean'
+      default: false
 
   activate: (state) ->
     @history = state.history or []
@@ -37,7 +41,7 @@ module.exports = BrowserPlus =
     @JQueryjs = fs.readFileSync "#{resources}jquery-1.11.3.min.js",'utf-8'
     # @JQueryjs = fs.readFileSync "#{resources}jquery-1.11.3.js",'utf-8'
     @Selectorjs = fs.readFileSync "#{resources}selector.js",'utf-8'
-
+    @clientJS = "#{resources}bp-client.js"
     atom.workspace.addOpener (uri,opt)=>
       path = require 'path'
       if ( path.extname(uri) is '.htmlp' or
