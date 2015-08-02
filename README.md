@@ -1,4 +1,5 @@
 # browser-plus package
+### Node Integeration has been made as optional(config- as this became security issue..) and is switched off by default
 
 Real Browser in ATOM
 
@@ -43,5 +44,3 @@ The browser url can be provided added in the config against the keys. The defaul
 
   Again there is expremental feature to provide selection and preview of the any dom element in the html page. This can be currently used against small dom element.
   -![Browser-Plus-Preview](https://raw.github.com/skandasoft/browser-plus/master/preview.gif)
-
-Note:: The node-integeration is enabled on for the working of this packages.
