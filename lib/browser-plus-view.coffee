@@ -72,12 +72,13 @@ class BrowserPlusView extends View
         if e.message.includes('~browser-plus-title~')
           console.log e.message
           title = e.message.replace('~browser-plus-title~','')
-          @model.setTitle(title)
+          @model.setTitle(title) unless title
         if e.message.includes('~browser-plus-href~')
           console.log e.message
           uri = e.message.replace('~browser-plus-href~','')
-          @uri.val uri
-          @model.uri = uri
+          if uri
+            @uri.val uri
+            @model.uri = uri
           @select.removeClass 'active'
           @deActivateSelection()
           @live.toggleClass 'active',@liveOn
