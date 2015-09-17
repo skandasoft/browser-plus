@@ -27,7 +27,7 @@ module.exports = BrowserPlus =
       type: 'number'
       default: 500
     node:
-      title: 'Node Integeration '
+      title: 'Node Integration '
       type: 'boolean'
       default: false
 
