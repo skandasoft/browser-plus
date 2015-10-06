@@ -30,6 +30,10 @@ module.exports = BrowserPlus =
       title: 'Node Integeration '
       type: 'boolean'
       default: false
+    currentFile:
+      title: 'Show Current File'
+      type: 'boolean'
+      default: true
 
   activate: (state) ->
     @history = state.history or []
@@ -72,7 +76,14 @@ module.exports = BrowserPlus =
     @subscriptions.add atom.commands.add 'atom-workspace', 'browser-plus:open': => @open()
     @subscriptions.add atom.commands.add 'atom-workspace', 'browser-plus:history': => @hist()
 
-  open: (uri = atom.config.get('browser-plus.homepage'),split,src)->
+  open: (split,src)->
+
+    if atom.config.get('browser-plus.currentFile')
+      editor = atom.workspace.getActivePaneItem()
+      uri = "file:///" + editor?.buffer.getUri()
+    unless uri
+      uri = atom.config.get('browser-plus.homepage')
+
     split = @getPosition()  unless split
     atom.workspace.open uri, {split:split,src:src}
 
