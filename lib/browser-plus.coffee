@@ -79,7 +79,7 @@ module.exports = BrowserPlus =
   open: (split,src)->
 
     if atom.config.get('browser-plus.currentFile')
-      editor = atom.workspace.getActivePaneItem()
+      editor = atom.workspace.getActiveTextEditor()
       uri = "file:///" + editor?.buffer.getUri()
     unless uri
       uri = atom.config.get('browser-plus.homepage')

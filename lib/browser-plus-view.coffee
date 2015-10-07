@@ -69,10 +69,6 @@ class BrowserPlusView extends View
         e.request.allow()
 
       @htmlv[0].addEventListener "console-message", (e)=>
-        if e.message.includes('~browser-plus-title~')
-          console.log e.message
-          title = e.message.replace('~browser-plus-title~','')
-          @model.setTitle(title) unless title
         if e.message.includes('~browser-plus-href~')
           console.log e.message
           uri = e.message.replace('~browser-plus-href~','')
@@ -87,11 +83,14 @@ class BrowserPlusView extends View
           @checkFav()
           @addHistory()
 
-      @htmlv[0].addEventListener "page-favicon-updated", (e)->
+      @htmlv[0].addEventListener "page-favicon-updated", (e)=>
+        @model.iconName = e.favicons[0]
+        @model.updateIcon()
+        console.log @iconName
         debugger
-
-      @htmlv[0].addEventListener "page-title-set", (e)->
+      @htmlv[0].addEventListener "page-title-set", (e)=>
         debugger
+        @model.setTitle(e.title)
 
 
       @htmlv[0].addEventListener "ipc-message", (evt)=>
