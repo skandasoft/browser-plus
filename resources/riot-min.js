@@ -1,7 +1,6 @@
 /* Riot v2.0.13, @license MIT, (c) 2015 Muut Inc. + contributors */
 
 ;(function() {
-
   var riot = { version: 'v2.0.13', settings: {} }
 
   'use strict'
@@ -941,7 +940,7 @@ riot.update = function() {
 riot.mountTo = riot.mount
 
 
-  
+
   // share methods for other riot parts, e.g. compiler
   riot.util = { brackets: brackets, tmpl: tmpl }
 

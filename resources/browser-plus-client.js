@@ -167,24 +167,4 @@ if (window['browser-plus'] == null) {
       });
     });
   });
-  ipc.on('updHist', function(hist) {
-    window.histTag.opts.hist = hist;
-    return window.histTag.update();
-  });
-  ipc.on('updFav', function(fav) {
-    window.favTag.opts.fav = fav;
-    return window.favTag.update();
-  });
-  ipc.on('historyPage', function(hist, fav) {
-    window.favTag = riot.mount('fav', {
-      fav: fav
-    })[0];
-    return window.histTag = riot.mount('hist', {
-      hist: hist
-    })[0];
-  });
-  ipc.on('clearHist', function() {
-    window.histTag.unmount(false);
-    return window.histTag = riot.mount('hist', []);
-  });
 }

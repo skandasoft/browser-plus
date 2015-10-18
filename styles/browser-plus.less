@@ -16,6 +16,53 @@
 
 }
 
+@font-face {
+  font-family: "fontello-print";
+  font-style: normal;
+  font-weight: normal;
+  src: url(atom://browser-plus/resources/fontello/font/fontello.woff) format('woff')
+}
+
+.icon-browser-pluss {
+  font-family: "fontello-print";
+
+  text-decoration: inherit;
+  margin-right: .2em;
+  text-align: center;
+  /* opacity: .8; */
+
+  /* For safety - reset parent styles, that can break glyph codes*/
+  font-variant: normal;
+  text-transform: none;
+
+  /* fix buttons height, for twitter bootstrap */
+  line-height: 1em;
+
+  /* Animation center compensation - margins should be symmetric */
+  /* remove if not needed */
+  margin-left: .2em;
+
+  /* you can be more comfortable with increased icons size */
+  font-weight: 900;
+  font-size: 1.7em;
+  display: inline-block;
+  padding-left: .2em;
+  padding-right: .2em;
+  color: #aaaaaa;
+  margin-left: 0.1em;
+  border: 1px solid transparent;
+
+
+  /* Font smoothing. That was taken from TWBS */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  /* Uncomment for 3D effect */
+  /* text-shadow: 1px 1px 1px rgba(127, 127, 127, 0.3); */
+}
+
+.icon-print:before { content: '\e800'; } /* '' */
+
 .browser-plus  #lbl-uri{
   color:green;
   font-size:18px;
@@ -36,7 +83,7 @@
   overflow: hidden;
 }
 
-.browser-plus  .nav-btns .octicon,.mega-octicon{
+.browser-plus  .mega-octicon{
   font-family: 'Octicons Regular';
   font-weight: 900;
   font-size: 1.7em;
@@ -46,6 +93,15 @@
   color: #aaaaaa;
   margin-left: 0.1em;
   border: 1px solid transparent;
+}
+
+.browser-plus .octicon{
+  font-family: 'Octicons Regular';
+  display: inline-block;
+  padding-right: .2em;
+  color: #aaaaaa;
+  font-weight: 200;
+  font-size: 1.4em;
 }
 
 webview::shadow{
@@ -70,6 +126,9 @@ webview::shadow{
 }
 .browser-plus  .octicon-sync::before{
   content: "\f087";
+}
+.browser-plus  .octicon-arrow-down::before{
+  content: "\f03f";
 }
 .browser-plus  .octicon-zap::before{
   content: "\26A1";

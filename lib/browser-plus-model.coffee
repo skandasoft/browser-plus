@@ -24,7 +24,6 @@ module.exports =
       @title or path.basename(@uri)
 
     getIconName: ->
-      console.log 'Pringing ICOn NAme', @iconName
       @iconName
 
     getURI: ->
