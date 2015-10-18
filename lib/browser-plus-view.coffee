@@ -2,6 +2,8 @@
 {View,$} = require 'atom-space-pen-views'
 loophole = require './eval'
 URL = require 'url'
+# riot = require 'riot'
+# require 'riotgear'
 favList = require './fav-view'
 module.exports =
 class BrowserPlusView extends View
