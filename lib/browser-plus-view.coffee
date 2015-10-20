@@ -329,19 +329,17 @@ class BrowserPlusView extends View
 
   removeFav: (favorite)->
     for favr,idx in @model.browserPlus.fav
-      @model.browserPlus.fav.splice idx,1 if favr.uri is favorite.uri
-    @model.browserPlus.histView?.htmlv[0].send('updFav',@model.browserPlus.fav)
+      if favr.uri is favorite.uri
+        return @model.browserPlus.fav.splice idx,1
 
   setSrc: (text)->
     @htmlv[0].src = "data:text/html,#{text}"
 
   checkFav: ->
-    @fav.removeClass 'active' if @model.browserPlus.fav.length is 0
+    @fav.removeClass 'active'
     for favr in @model.browserPlus.fav
       if favr.uri is @model.uri
         @fav.addClass 'active'
-      else
-        @fav.removeClass 'active'
 
   toggleDevTool: ->
     open = @htmlv[0].isDevToolsOpened()
