@@ -1,7 +1,7 @@
 {
   "name": "browser-plus",
   "main": "./lib/browser-plus",
-  "version": "0.0.39",
+  "version": "0.0.40",
   "description": "Browser Plus",
   "repository": "https://github.com/skandasoft/browser-plus",
   "license": "MIT",
