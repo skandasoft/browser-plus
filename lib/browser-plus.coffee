@@ -1,6 +1,7 @@
 {CompositeDisposable} = require 'atom'
 BrowserPlusModel = require './browser-plus-model'
 BrowserPlusView = require './browser-plus-view'
+favList = require './fav-view'
 fs = require 'fs'
 module.exports = BrowserPlus =
   browserPlusView: null
@@ -77,12 +78,17 @@ module.exports = BrowserPlus =
     # Register command that toggles this view
     @subscriptions.add atom.commands.add 'atom-workspace', 'browser-plus:open': => @open()
     @subscriptions.add atom.commands.add 'atom-workspace', 'browser-plus:history': => @hist()
+    @subscriptions.add atom.commands.add 'atom-workspace', 'browser-plus:fav': => @favr()
+
+  favr: ->
+    new favList(@fav)
 
   open: (split,src)->
 
     if atom.config.get('browser-plus.currentFile')
       editor = atom.workspace.getActiveTextEditor()
-      uri = "file:///" + editor?.buffer.getUri()
+      if uri = editor?.buffer?.getUri()
+        uri = "file:///"+uri
     unless uri
       uri = atom.config.get('browser-plus.homepage')
 
