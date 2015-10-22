@@ -365,6 +365,7 @@ class BrowserPlusView extends View
         @htmlv[0].executeJavaScript "location.href = '#{@model.uri}'"
 
   goToUrl: (url)->
+      jQ(@uri).autocomplete("close")
       @select.removeClass 'active'
       @deActivateSelection()
       @liveOn = false
