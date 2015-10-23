@@ -358,7 +358,7 @@ class BrowserPlusView extends View
                 urls.protocol = 'http'
                 url = URL.format(urls)
 
-            @goToUrl(url)
+          @goToUrl(url)
 
       @refresh.on 'click', (evt)=>
         return if @model.uri is 'browser-plus://history'
