@@ -2,7 +2,7 @@
 {View,$} = require 'atom-space-pen-views'
 loophole = require './eval'
 URL = require 'url'
-jQ = require 'jquery'
+jQ = require '../node_modules/jquery/dist/jquery.js'
 require 'jquery-ui/autocomplete'
 _ = require 'lodash'
 # riot = require 'riot'

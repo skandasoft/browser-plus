@@ -46,7 +46,7 @@ module.exports = BrowserPlus =
     resources = "#{atom.packages.getLoadedPackage('browser-plus').path}/resources/"
     @js = fs.readFileSync "#{resources}browser-plus-client.js",'utf-8'
     @CSSjs = fs.readFileSync "#{resources}CSSUtilities.js",'utf-8'
-    @JQueryjs = fs.readFileSync "#{resources}jquery-1.11.3.min.js",'utf-8'
+    @JQueryjs = fs.readFileSync "#{resources}jquery-2.1.4.min.js",'utf-8'
     @Selectorjs = fs.readFileSync "#{resources}selector.js",'utf-8'
     @clientJS = "#{resources}bp-client.js"
     atom.workspace.addOpener (uri,opt)=>
