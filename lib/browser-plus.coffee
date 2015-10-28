@@ -33,7 +33,7 @@ module.exports = BrowserPlus =
       default: true
 
   activate: (state) ->
-    if state.history and not state.favIcon
+    unless state.reset
       state.history = []
       state.favIcon = {}
       state.title = {}
@@ -120,3 +120,4 @@ module.exports = BrowserPlus =
     fav: @fav
     favIcon: @favIcon
     title: @title
+    reset: true
