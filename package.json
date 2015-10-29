@@ -1,7 +1,7 @@
 {
   "name": "browser-plus",
   "main": "./lib/browser-plus",
-  "version": "0.0.51",
+  "version": "0.0.52",
   "description": "Browser Plus",
   "repository": "https://github.com/skandasoft/browser-plus",
   "license": "MIT",
@@ -16,13 +16,13 @@
     "lodash": "^3.10.1"
   },
   "providedServices": {
-      "browser-plus": {
-        "description": "provide logic for blocking uri",
-        "versions": {
-          "0.0.51": "provideService"
-        }
+    "browser-plus": {
+      "description": "provide logic for blocking uri",
+      "versions": {
+        "0.0.51": "provideService"
       }
-    },
+    }
+  },
   "keywords": [
     "browser",
     "webbrowser",
