@@ -175,10 +175,10 @@ class BrowserPlusView extends View
             indx = data.indexOf(' ')
             uri = data.substr(0,indx)
             title = data.substr(indx + 1)
-            if uri
+            if uri and uri isnt @model.uri
               @uri.val uri
               @model.uri = uri
-            if title
+            if title and title isnt @model.getTitle()
               @model.browserPlus.title[@model.uri] = title
               @model.setTitle(title)
 
@@ -362,14 +362,24 @@ class BrowserPlusView extends View
               else
                 urls.protocol = 'http'
                 url = URL.format(urls)
-
-          @goToUrl(url)
+            @goToUrl(url)
 
       @refresh.on 'click', (evt)=>
         return if @model.uri is 'browser-plus://history'
         @htmlv[0].executeJavaScript "location.href = '#{@model.uri}'"
 
   goToUrl: (url)->
+      for uri in atom.config.get('browser-plus.blockUri')
+        pattern = ///
+                    #{uri}
+                  ///i
+        if url.match(pattern)
+          if atom.config.get('browser-plus.alert')
+            alert('URI Block~~Maintained in COnfig')
+          else
+            console.log 'URI Block~~Maintained in COnfig'
+          return
+
       jQ(@uri).autocomplete("close")
       @select.removeClass 'active'
       @deActivateSelection()
