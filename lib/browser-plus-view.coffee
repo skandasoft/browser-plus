@@ -13,6 +13,8 @@ class BrowserPlusView extends View
   constructor: (@model)->
     @subscriptions = new CompositeDisposable
     @model.view = @
+    @model.onDidDestroy =>
+      jQ(@uri).autocomplete('destroy')
     super
 
   @content: (params)->
@@ -455,6 +457,9 @@ class BrowserPlusView extends View
       @model.browserPlus.histView?.htmlv[0].executeJavaScript " histTag.opts.hist = eval(#{histJSON}); histTag.opts.title = eval(#{titleJSON});histTag.opts.favIcon = eval(#{favIconJSON});histTag.update();"
     , 2000
 
-  # destroy: ->
+  serialize: ->
+
+  destroy: ->
     # @element.remove()
+    jQ(@uri).autocomplete('destroy')
     #
