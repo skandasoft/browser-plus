@@ -220,6 +220,7 @@ class BrowserPlusView extends View
         @model.browserPlus.title[@model.uri] = e.title
         @liveHistory()
         @model.setTitle(e.title)
+        @htmlv?[0]?.executeJavaScript? 'console.log("~browser-plus-href~"+location.href + " "+document.title);'
 
       @htmlv[0].addEventListener "ipc-message", (evt)=>
         switch evt.channel
