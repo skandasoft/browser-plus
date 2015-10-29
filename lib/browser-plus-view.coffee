@@ -16,9 +16,9 @@ class BrowserPlusView extends View
     super
 
   @content: (params)->
-    srcdir = atom.packages.getActivePackage('browser-plus').path
+    srcdir = atom.packages.getPackageDirPaths('browser-plus')[0]+'/browser-plus'
     if (url  = params.uri).indexOf('browser-plus://history') >= 0
-      resources = "#{atom.packages.getActivePackage('browser-plus').path}/resources/"
+      resources = "#{srcdir}/resources/"
       url = "file://#{resources}history.html"
     if params.src
       src = params.src.replace(/"/g,'&quot;')

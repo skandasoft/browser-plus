@@ -4,7 +4,11 @@
 path = require 'path'
 module.exports =
   class HTMLEditor extends Model
-    constructor: (@browserPlus,@uri,@src)->
+    atom.deserializers.add(this)
+    constructor: (obj)->
+      @browserPlus = obj.browserPlus
+      @uri = obj.uri
+      @src = obj.src
       @disposable = new Disposable()
       @emitter = new Emitter
 
@@ -45,3 +49,14 @@ module.exports =
 
     updateIcon: ->
       @emit 'icon-changed'
+
+    serialize: ->
+      data:
+        browserPlus: @browserPlus
+        uri: @uri
+        src:  @src
+        iconName: @iconName
+        title: @title
+      deserializer: 'HTMLEditor'
+    @deserialize: ({data}) ->
+      new HTMLEditor(data)

@@ -61,7 +61,7 @@ module.exports = BrowserPlus =
                               localhost
                               ///i
          uri = uri.replace(localhostPattern,'http://127.0.0.1')
-         bp = new BrowserPlusModel @,uri,opt.src
+         bp = new BrowserPlusModel {browserPlus:@,uri:uri,src:opt.src}
          if uri.indexOf('browser-plus://history') is 0
            bp.on 'destroyed', =>
              @histView = undefined
