@@ -60,3 +60,16 @@ module.exports =
       deserializer: 'HTMLEditor'
     @deserialize: ({data}) ->
       new HTMLEditor(data)
+
+    @checkUrl: (url)->
+      for uri in atom.config.get('browser-plus.blockUri')
+        pattern = ///
+                    #{uri}
+                  ///i
+        if url.match(pattern) or ( @checkBlockUrl? and @checkBlockUrl(url) )
+          if atom.config.get('browser-plus.alert')
+            atom.notifications.addSuccess("#{url} Blocked~~Maintain Blocked URL in Browser-Plus Settings")
+          else
+            console.log "#{url} Blocked~~Maintain Blocked URL in Browser-Plus Settings"
+          return false
+        return true

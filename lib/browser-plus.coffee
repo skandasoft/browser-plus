@@ -32,7 +32,7 @@ module.exports = BrowserPlus =
       type: 'boolean'
       default: true
     blockUri:
-      title: 'Block URIs'
+      title: 'Block URIs keywords'
       type: 'array'
       default: ['youtube']
     alert:
@@ -68,16 +68,7 @@ module.exports = BrowserPlus =
                               (http://)?
                               localhost
                               ///i
-         for url in atom.config.get('browser-plus.blockUri')
-            pattern = ///
-                      #{url}
-                     ///i
-            if uri.match(pattern)
-              if atom.config.get('browser-plus.alert')
-                alert('URI Block~~Maintained in COnfig')
-              else
-                console.log 'URI Block~~Maintained in COnfig'
-              return false
+         return false unless BrowserPlusModel.checkUrl(uri)
          uri = uri.replace(localhostPattern,'http://127.0.0.1')
          bp = new BrowserPlusModel {browserPlus:@,uri:uri,src:opt.src}
          if uri.indexOf('browser-plus://history') is 0
@@ -139,3 +130,6 @@ module.exports = BrowserPlus =
     favIcon: @favIcon
     title: @title
     reset: true
+
+  provideService: ->
+    BrowserPlusModel

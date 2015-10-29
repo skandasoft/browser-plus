@@ -4,6 +4,7 @@ loophole = require './eval'
 URL = require 'url'
 jQ = require '../node_modules/jquery/dist/jquery.js'
 require 'jquery-ui/autocomplete'
+BrowserPlusModel = require './browser-plus-model'
 _ = require 'lodash'
 # riot = require 'riot'
 # require 'riotgear'
@@ -175,6 +176,11 @@ class BrowserPlusView extends View
             indx = data.indexOf(' ')
             uri = data.substr(0,indx)
             title = data.substr(indx + 1)
+            unless BrowserPlusModel.checkUrl(uri)
+              uri = atom.config.get('browser-plus.homepage') or "http://www.google.com"
+              atom.notifications.addSuccess("Redirecting to #{uri}")
+              @htmlv[0].executeJavaScript "location.href = '#{uri}'"
+              return
             if uri and uri isnt @model.uri
               @uri.val uri
               @model.uri = uri
@@ -369,17 +375,7 @@ class BrowserPlusView extends View
         @htmlv[0].executeJavaScript "location.href = '#{@model.uri}'"
 
   goToUrl: (url)->
-      for uri in atom.config.get('browser-plus.blockUri')
-        pattern = ///
-                    #{uri}
-                  ///i
-        if url.match(pattern)
-          if atom.config.get('browser-plus.alert')
-            alert('URI Block~~Maintained in COnfig')
-          else
-            console.log 'URI Block~~Maintained in COnfig'
-          return
-
+      return unless BrowserPlusModel.checkUrl(url)
       jQ(@uri).autocomplete("close")
       @select.removeClass 'active'
       @deActivateSelection()
