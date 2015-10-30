@@ -87,15 +87,16 @@ module.exports = BrowserPlus =
 
     # Register command that toggles this view
     @subscriptions.add atom.commands.add 'atom-workspace', 'browser-plus:open': => @open()
+    @subscriptions.add atom.commands.add 'atom-workspace', 'browser-plus:openCurrent': => @open(null,null,true)
     @subscriptions.add atom.commands.add 'atom-workspace', 'browser-plus:history': => @hist()
     @subscriptions.add atom.commands.add 'atom-workspace', 'browser-plus:fav': => @favr()
 
   favr: ->
     new favList(@fav)
 
-  open: (split,src)->
+  open: (split,src,current)->
 
-    if atom.config.get('browser-plus.currentFile')
+    if atom.config.get('browser-plus.currentFile') or current
       editor = atom.workspace.getActiveTextEditor()
       if uri = editor?.buffer?.getUri()
         uri = "file:///"+uri

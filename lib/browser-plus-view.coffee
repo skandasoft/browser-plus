@@ -130,14 +130,14 @@ class BrowserPlusView extends View
         Array.observe @model.browserPlus.fav, (ele)=>
           @checkFav()
 
-      @htmlv[0].addEventListener "permissionrequest", (e)->
+      @htmlv[0]?.addEventListener "permissionrequest", (e)->
         e.request.allow()
 
-      @htmlv[0].addEventListener "console-message", (e)=>
+      @htmlv[0]?.addEventListener "console-message", (e)=>
         if @model.uri is 'browser-plus://history'
           if e.message.includes('~browser-plus-hist-clear~')
             @model.browserPlus.history = []
-            @htmlv[0].executeJavaScript "riot.mount('hist',eval(#{data})); histTag = (riot.update())[0]"
+            @htmlv[0]?.executeJavaScript "riot.mount('hist',eval(#{data})); histTag = (riot.update())[0]"
 
           if e.message.includes('~browser-plus-hist-del-date~')
             delDate = e.message.replace('~browser-plus-hist-del-date~','')
@@ -170,7 +170,7 @@ class BrowserPlusView extends View
                     title: @model.browserPlus.title
                     favIcon: @model.browserPlus.favIcon
             data = JSON.stringify(data)
-            @htmlv[0].executeJavaScript "riot.mount('hist',eval(#{data})); histTag = (riot.update())[0]"
+            @htmlv[0]?.executeJavaScript "riot.mount('hist',eval(#{data})); histTag = (riot.update())[0]"
           else
             data = e.message.replace('~browser-plus-href~','')
             indx = data.indexOf(' ')
@@ -179,7 +179,7 @@ class BrowserPlusView extends View
             unless BrowserPlusModel.checkUrl(uri)
               uri = atom.config.get('browser-plus.homepage') or "http://www.google.com"
               atom.notifications.addSuccess("Redirecting to #{uri}")
-              @htmlv[0].executeJavaScript "location.href = '#{uri}'"
+              @htmlv[0]?.executeJavaScript "location.href = '#{uri}'"
               return
             if uri and uri isnt @model.uri
               @uri.val uri
@@ -204,7 +204,7 @@ class BrowserPlusView extends View
                   ,100      #
 
 
-      @htmlv[0].addEventListener "page-favicon-updated", (e)=>
+      @htmlv[0]?.addEventListener "page-favicon-updated", (e)=>
         @model.browserPlus.favIcon[@model.uri] = icon = e.favicons[0]
         @model.iconName = Math.floor(Math.random()*10000)
         @model.updateIcon()
@@ -222,13 +222,13 @@ class BrowserPlusView extends View
         document.getElementsByTagName('head')[0].appendChild(style)
         @liveHistory()
 
-      @htmlv[0].addEventListener "page-title-set", (e)=>
+      @htmlv[0]?.addEventListener "page-title-set", (e)=>
         @model.browserPlus.title[@model.uri] = e.title
         @liveHistory()
         @model.setTitle(e.title)
         @htmlv?[0]?.executeJavaScript? 'console.log("~browser-plus-href~"+location.href + " "+document.title);'
 
-      @htmlv[0].addEventListener "ipc-message", (evt)=>
+      @htmlv[0]?.addEventListener "ipc-message", (evt)=>
         switch evt.channel
 
           when 'selection'
@@ -240,10 +240,10 @@ class BrowserPlusView extends View
         @toggleDevTool()
 
       @print.on 'click', (evt)=>
-        @htmlv[0].print()
+        @htmlv[0]?.print()
 
       # @pdf.on 'click', (evt)=>
-      #   @htmlv[0].printToPDF {}, (data,err)->
+      #   @htmlv[0]?.printToPDF {}, (data,err)->
 
       @live.on 'click', (evt)=>
         return if @model.uri is 'browser-plus://history'
@@ -251,7 +251,7 @@ class BrowserPlusView extends View
         @liveOn = !@liveOn
         @live.toggleClass('active',@liveOn)
         if @liveOn
-          @htmlv[0].executeJavaScript "location.href = '#{@model.uri}'"
+          @htmlv[0]?.executeJavaScript "location.href = '#{@model.uri}'"
           @liveSubscription = new CompositeDisposable
           @liveSubscription.add atom.workspace.observeTextEditors (editor)=>
                     @liveSubscription.add editor.onDidSave =>
@@ -304,7 +304,7 @@ class BrowserPlusView extends View
 
       @fav.on 'click',(evt)=>
         return if @model.src
-        return if @htmlv[0].getUrl().includes('data:text/html,')
+        return if @htmlv[0]?.getUrl().includes('data:text/html,')
         return if @model.uri.includes 'browser-plus:'
         favs = @model.browserPlus.fav
         if @fav.hasClass('active')
@@ -312,7 +312,7 @@ class BrowserPlusView extends View
         else
           data = {
             uri: @model.uri
-            title: @model.browserPlus.title[@model.uri]
+            title: @model.browserPlus.title[@model.uri] or @model.uri
             favIcon: @model.browserPlus.favIcon[@model.uri]
           }
           favs.push data
@@ -321,28 +321,28 @@ class BrowserPlusView extends View
         @fav.toggleClass 'active'
         @model.browserPlus.histView?.htmlv[0].send('updFav',@model.browserPlus.fav)
 
-      @htmlv[0].addEventListener 'new-window', (e)->
+      @htmlv[0]?.addEventListener 'new-window', (e)->
         #require('shell').openExternal(e.url)
         atom.workspace.open e.url, {split: 'left',searchAllPanes:true}
       #
       # #
-      @htmlv[0].addEventListener "did-start-loading", =>
-        @htmlv[0].shadowRoot.firstChild.style.height = '95%'
+      @htmlv[0]?.addEventListener "did-start-loading", =>
+        @htmlv[0]?.shadowRoot.firstChild.style.height = '95%'
 
       @history.on 'click',(evt)=>
         atom.workspace.open 'browser-plus://history' , {split: 'left',searchAllPanes:true}
       #
       #
       @back.on 'click', (evt)=>
-        if @htmlv[0].canGoBack() and $(` this`).hasClass('active')
-          @htmlv[0].goBack()
+        if @htmlv[0]?.canGoBack() and $(` this`).hasClass('active')
+          @htmlv[0]?.goBack()
 
       @favList.on 'click', (evt)=>
         new favList(@model.browserPlus.fav)
 
       @forward.on 'click', (evt)=>
-        if @htmlv[0].canGoForward() and $(` this`).hasClass('active')
-          @htmlv[0].goForward()
+        if @htmlv[0]?.canGoForward() and $(` this`).hasClass('active')
+          @htmlv[0]?.goForward()
 
       @uri.on 'keypress',(evt)=>
         if evt.which is 13
@@ -372,7 +372,7 @@ class BrowserPlusView extends View
 
       @refresh.on 'click', (evt)=>
         return if @model.uri is 'browser-plus://history'
-        @htmlv[0].executeJavaScript "location.href = '#{@model.uri}'"
+        @htmlv[0]?.executeJavaScript "location.href = '#{@model.uri}'"
 
   goToUrl: (url)->
       return unless BrowserPlusModel.checkUrl(url)
@@ -391,9 +391,9 @@ class BrowserPlusView extends View
 
   deActivateSelection: =>
     if @select.hasClass('active')
-      @htmlv[0].send 'select'
+      @htmlv[0]?.send 'select'
     else
-      @htmlv[0].send 'deselect'
+      @htmlv[0]?.send 'deselect'
 
   removeFav: (favorite)->
     for favr,idx in @model.browserPlus.fav
@@ -401,7 +401,7 @@ class BrowserPlusView extends View
         return @model.browserPlus.fav.splice idx,1
 
   setSrc: (text)->
-    @htmlv[0].src = "data:text/html,#{text}"
+    @htmlv[0]?.src = "data:text/html,#{text}"
 
   checkFav: ->
     @fav.removeClass 'active'
@@ -410,20 +410,20 @@ class BrowserPlusView extends View
         @fav.addClass 'active'
 
   toggleDevTool: ->
-    open = @htmlv[0].isDevToolsOpened()
+    open = @htmlv[0]?.isDevToolsOpened()
     if open
-      @htmlv[0].closeDevTools()
+      @htmlv[0]?.closeDevTools()
     else
-      @htmlv[0].openDevTools()
+      @htmlv[0]?.openDevTools()
 
     $(@devtool).toggleClass 'active', !open
 
 
 
   checkNav: ->
-      $(@forward).toggleClass 'active',@htmlv[0].canGoForward()
-      $(@back).toggleClass 'active',@htmlv[0].canGoBack()
-      if @htmlv[0].canGoForward()
+      $(@forward).toggleClass 'active',@htmlv[0]?.canGoForward()
+      $(@back).toggleClass 'active',@htmlv[0]?.canGoBack()
+      if @htmlv[0]?.canGoForward()
         if @clearForward
           $(@forward).toggleClass 'active',false
           @clearForward = false
@@ -431,7 +431,7 @@ class BrowserPlusView extends View
           $(@forward).toggleClass 'active',true
 
   addHistory: ->
-    url = @htmlv[0].getUrl()
+    url = @htmlv[0]?.getUrl()
     return if url.includes('browser-plus://') or url.includes('data:text/html,')
     yyyymmdd = ->
       date = new Date()
