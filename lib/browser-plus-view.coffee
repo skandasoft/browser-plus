@@ -123,6 +123,7 @@ class BrowserPlusView extends View
       @liveOn = false
       @subscriptions.add atom.tooltips.add @thumbs, title: 'Preview'
       @element.onkeydown = =>@showDevTool(arguments)
+      @checkFav() if @model.uri.indexOf('file:///') >= 0
       if @model.uri.indexOf('browser-plus://history') >= 0
         @hist = true
         @model.browserPlus.histView = @
@@ -184,9 +185,12 @@ class BrowserPlusView extends View
             if uri and uri isnt @model.uri
               @uri.val uri
               @model.uri = uri
-            if title and title isnt @model.getTitle()
+            if title
               @model.browserPlus.title[@model.uri] = title
-              @model.setTitle(title)
+              @model.setTitle(title) if title isnt @model.getTitle()
+            else
+              @model.browserPlus.title[@model.uri] = uri
+              @model.setTitle(uri)
 
             @select.removeClass 'active'
             @deActivateSelection()
@@ -226,7 +230,7 @@ class BrowserPlusView extends View
         @model.browserPlus.title[@model.uri] = e.title
         @liveHistory()
         @model.setTitle(e.title)
-        @htmlv?[0]?.executeJavaScript? 'console.log("~browser-plus-href~"+location.href + " "+document.title);'
+        #@htmlv?[0]?.executeJavaScript? 'console.log("~browser-plus-href~"+location.href + " "+document.title);'
 
       @htmlv[0]?.addEventListener "ipc-message", (evt)=>
         switch evt.channel
@@ -368,7 +372,7 @@ class BrowserPlusView extends View
               else
                 urls.protocol = 'http'
                 url = URL.format(urls)
-            @goToUrl(url)
+          @goToUrl(url)
 
       @refresh.on 'click', (evt)=>
         return if @model.uri is 'browser-plus://history'
