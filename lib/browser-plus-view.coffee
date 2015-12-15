@@ -348,6 +348,9 @@ class BrowserPlusView extends View
         if @htmlv[0]?.canGoForward() and $(` this`).hasClass('active')
           @htmlv[0]?.goForward()
 
+      @uri.on 'click',(evt)=>
+        ` this.select()`
+
       @uri.on 'keypress',(evt)=>
         if evt.which is 13
           urls = URL.parse(` this.value`)
