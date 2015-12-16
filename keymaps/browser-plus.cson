@@ -25,4 +25,6 @@
     # 'shift-left': 'native!'
     # 'shift-right': 'native!'
     # 'delete': 'native!'
+    'alt-left': 'browser-plus-view:goBack'
+    'alt-right': 'browser-plus-view:goForward'
     'f12': 'browser-plus:openDevTool'
