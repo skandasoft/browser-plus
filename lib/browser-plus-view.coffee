@@ -15,6 +15,8 @@ class BrowserPlusView extends View
     @subscriptions = new CompositeDisposable
     @model.view = @
     @model.onDidDestroy =>
+      # dispose so there aren't dangling subscriptions
+      @subscriptions.dispose()
       jQ(@uri).autocomplete('destroy')
     super
 
@@ -120,6 +122,8 @@ class BrowserPlusView extends View
       @subscriptions.add atom.tooltips.add @fav, title: 'Favoritize'
       @subscriptions.add atom.tooltips.add @live, title: 'Live'
       @subscriptions.add atom.tooltips.add @devtool, title: 'Dev Tools-f12'
+      @subscriptions.add atom.commands.add '.browser-plus webview', 'browser-plus-view:goBack': => @goBack()
+      @subscriptions.add atom.commands.add '.browser-plus webview', 'browser-plus-view:goForward': => @goForward()
       @liveOn = false
       @subscriptions.add atom.tooltips.add @thumbs, title: 'Preview'
       @element.onkeydown = =>@showDevTool(arguments)
@@ -392,6 +396,12 @@ class BrowserPlusView extends View
       @uri.val url
       @model.uri = url
       @htmlv.attr 'src',url
+
+  goBack: ->
+    @back.click()
+
+  goForward: ->
+    @forward.click()
 
   showDevTool: (evt)->
     @toggleDevTool() if evt[0].keyIdentifier is "F12"
