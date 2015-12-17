@@ -231,7 +231,7 @@ class BrowserPlusView extends View
               background-repeat: no-repeat;
               padding-left: 20px;
               background-image: url('#{icon}');
-              background-position-y: 5px;
+              background-position-y: 50%;
             }
           """
         document.getElementsByTagName('head')[0].appendChild(style)
