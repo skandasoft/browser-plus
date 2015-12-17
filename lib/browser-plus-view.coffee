@@ -1,6 +1,7 @@
 {CompositeDisposable}  = require 'atom'
 {View,$} = require 'atom-space-pen-views'
 loophole = require './eval'
+fs = require 'fs'
 URL = require 'url'
 jQ = require '../node_modules/jquery/dist/jquery.js'
 require 'jquery-ui/autocomplete'
@@ -12,6 +13,7 @@ favList = require './fav-view'
 module.exports =
 class BrowserPlusView extends View
   constructor: (@model)->
+    @resources = "#{atom.packages.getLoadedPackage('browser-plus').path}/resources/"
     @subscriptions = new CompositeDisposable
     @model.view = @
     @model.onDidDestroy =>
@@ -23,8 +25,7 @@ class BrowserPlusView extends View
   @content: (params)->
     srcdir = atom.packages.getPackageDirPaths('browser-plus')[0]+'/browser-plus'
     if (url  = params.uri).indexOf('browser-plus://history') >= 0
-      resources = "#{srcdir}/resources/"
-      url = "file://#{resources}history.html"
+      url = "file://#{@resources}history.html"
     if params.src
       src = params.src.replace(/"/g,'&quot;')
       if src.includes "data:text/html,"
@@ -55,6 +56,7 @@ class BrowserPlusView extends View
           @div class:'input-uri', =>
             @input class:"native-key-bindings", type:'text',id:'uri',outlet:'uri',value:"#{params.uri}" ##{@uri}"
             # @tag 'rg-select', autocomplete:"true", type:'text',options="{ countries }", class:"native-key-bindings",type:'text',id:'uri',outlet:'uri',value:"#{params.uri}" ##{@uri}"
+        @input id:'find',class:'find find-hide',outlet:'find'
       if atom.config.get('browser-plus.node')
         @tag 'webview',class:"native-key-bindings",outlet: 'htmlv',
         nodeintegration:'on',plugins:'on',src:"#{url}", disablewebsecurity:'on', allowfileaccessfromfiles:'on', allowPointerLock:'on',preload:"file:///#{srcdir}/resources/bp-client.js",
@@ -124,8 +126,11 @@ class BrowserPlusView extends View
       @subscriptions.add atom.tooltips.add @live, title: 'Live'
       @subscriptions.add atom.tooltips.add @devtool, title: 'Dev Tools-f12'
       @subscriptions.add atom.tooltips.add @spinner, title: 'spinner'
+      @subscriptions.add atom.tooltips.add @find, title: 'find'
       @subscriptions.add atom.commands.add '.browser-plus webview', 'browser-plus-view:goBack': => @goBack()
       @subscriptions.add atom.commands.add '.browser-plus webview', 'browser-plus-view:goForward': => @goForward()
+      @subscriptions.add atom.commands.add '.browser-plus', 'browser-plus-view:findOn': => @findOn()
+      @subscriptions.add atom.commands.add '.browser-plus', 'browser-plus-view:findOff': => @findOff()
       @liveOn = false
       @subscriptions.add atom.tooltips.add @thumbs, title: 'Preview'
       @element.onkeydown = =>@showDevTool(arguments)
@@ -343,6 +348,12 @@ class BrowserPlusView extends View
       @htmlv[0]?.addEventListener "did-stop-loading", =>
         @spinner.addClass 'fa-custom'
 
+      @htmlv[0]?.addEventListener "dom-ready", =>
+        findCSS = fs.readFileSync "#{@resources}highlight.css", "utf-8"
+        findJS = fs.readFileSync "#{@resources}jquery.highlight.js", "utf-8"
+        @htmlv[0].insertCSS(findCSS)
+        @htmlv[0].executeJavaScript(findJS)
+
       @history.on 'click',(evt)=>
         atom.workspace.open 'browser-plus://history' , {split: 'left',searchAllPanes:true}
       #
@@ -359,10 +370,24 @@ class BrowserPlusView extends View
           @htmlv[0]?.goForward()
 
       @uri.on 'click',(evt)=>
-        ` this.select()`
+        @uri.select()
+
+      @find.on 'keyup',(evt)=>
+        if evt.which is 13
+          highlightJS = fs.readFileSync "#{@resources}highlight.js", "utf-8"
+          @htmlv[0].executeJavaScript(highlightJS)
+        else
+          @htmlv[0].executeJavaScript("""
+             jQuery('body').unhighlight();
+             jQuery('body').highlight('#{@find.val()}');
+             jQuery('span').removeClass('browser-plus-find');
+             jQuery('span').removeClass('browser-plus-previous');
+             jQuery('.highlight:visible:first').addClass('browser-plus-find');
+          """)
 
       @uri.on 'keypress',(evt)=>
         if evt.which is 13
+          @uri.blur()
           urls = URL.parse(` this.value`)
           url = ` this.value`
           if url.indexOf(' ') >= 0
@@ -408,6 +433,19 @@ class BrowserPlusView extends View
 
   goForward: ->
     @forward.click()
+
+  findOn: ->
+    if @find.hasClass('find-hide')
+      @find.removeClass('find-hide')
+      @find.focus()
+    else
+      @find.select()
+
+  findOff: ->
+    @find.val('')
+    @find.addClass('find-hide')
+    @htmlv[0].focus()
+    @htmlv[0].executeJavaScript("jQ('body').unhighlight();")
 
   showDevTool: (evt)->
     @toggleDevTool() if evt[0].keyIdentifier is "F12"
