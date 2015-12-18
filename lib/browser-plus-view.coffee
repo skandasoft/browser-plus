@@ -13,6 +13,7 @@ favList = require './fav-view'
 module.exports =
 class BrowserPlusView extends View
   constructor: (@model)->
+    @zoomFactor = 100
     @resources = "#{atom.packages.getLoadedPackage('browser-plus').path}/resources/"
     @subscriptions = new CompositeDisposable
     @model.view = @
@@ -20,6 +21,11 @@ class BrowserPlusView extends View
       # dispose so there aren't dangling subscriptions
       @subscriptions.dispose()
       jQ(@uri).autocomplete('destroy')
+    atom.notifications.onDidAddNotification (notification) ->
+      if notification.type == 'info'
+        setTimeout () ->
+          notification.dismiss()
+        , 1000
     super
 
   @content: (params)->
@@ -131,6 +137,8 @@ class BrowserPlusView extends View
       @subscriptions.add atom.commands.add '.browser-plus webview', 'browser-plus-view:goForward': => @goForward()
       @subscriptions.add atom.commands.add '.browser-plus', 'browser-plus-view:findOn': => @findOn()
       @subscriptions.add atom.commands.add '.browser-plus', 'browser-plus-view:findOff': => @findOff()
+      @subscriptions.add atom.commands.add '.browser-plus', 'browser-plus-view:zoomIn': => @zoom(10)
+      @subscriptions.add atom.commands.add '.browser-plus', 'browser-plus-view:zoomOut': => @zoom(-10)
       @liveOn = false
       @subscriptions.add atom.tooltips.add @thumbs, title: 'Preview'
       @element.onkeydown = =>@showDevTool(arguments)
@@ -433,6 +441,16 @@ class BrowserPlusView extends View
 
   goForward: ->
     @forward.click()
+
+  zoom: (factor) ->
+    if 20 <= @zoomFactor+factor <= 500
+      @zoomFactor += factor
+    # remove from ui
+    atom.notifications.getNotifications()[0]?.dismiss()
+    # remove from NotficationManager.notifications
+    atom.notifications.clear()
+    atom.notifications.addInfo("zoom: #{@zoomFactor}%", {dismissable:true})
+    @htmlv[0].executeJavaScript("jQ('body').css('zoom', '#{@zoomFactor}%')")
 
   findOn: ->
     if @find.hasClass('find-hide')
