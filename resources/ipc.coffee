@@ -1,7 +1,7 @@
 unless window['browser-plus']?
   ipc = require 'ipc'
   href = location.href
-  href = null if href.includes 'data:text/html,'
+  href = null if href.startsWith 'data:text/html,'
   ipc.sendToHost 'startup',{ href:href, title: document.title }
 
 

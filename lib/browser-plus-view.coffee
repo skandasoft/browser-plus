@@ -1,4 +1,5 @@
 {CompositeDisposable}  = require 'atom'
+
 {View,$} = require 'atom-space-pen-views'
 loophole = require './eval'
 URL = require 'url'
@@ -25,11 +26,12 @@ class BrowserPlusView extends View
       url = "file://#{resources}history.html"
     if params.src
       src = params.src.replace(/"/g,'&quot;')
-      if src.includes "data:text/html,"
+      if src.startsWith "data:text/html,"
         url = src
       else
         url = "data:text/html, #{src}"
-
+    if params.realURL
+      url = params.realURL
     @div class:'browser-plus', =>
       @div class:'uri native-key-bindings', =>
         @div class: 'nav-btns-left', =>
@@ -182,7 +184,7 @@ class BrowserPlusView extends View
               atom.notifications.addSuccess("Redirecting to #{uri}")
               @htmlv[0]?.executeJavaScript "location.href = '#{uri}'"
               return
-            if uri and uri isnt @model.uri
+            if uri and uri isnt @model.uri and not @model.realURL
               @uri.val uri
               @model.uri = uri
             if title
@@ -255,7 +257,8 @@ class BrowserPlusView extends View
         @liveOn = !@liveOn
         @live.toggleClass('active',@liveOn)
         if @liveOn
-          @htmlv[0]?.executeJavaScript "location.href = '#{@model.uri}'"
+          # @htmlv[0]?.executeJavaScript "location.href = '#{@model.uri}'"
+          @refresh()
           @liveSubscription = new CompositeDisposable
           @liveSubscription.add atom.workspace.observeTextEditors (editor)=>
                     @liveSubscription.add editor.onDidSave =>
@@ -308,8 +311,8 @@ class BrowserPlusView extends View
 
       @fav.on 'click',(evt)=>
         return if @model.src
-        return if @htmlv[0]?.getUrl().includes('data:text/html,')
-        return if @model.uri.includes 'browser-plus:'
+        return if @htmlv[0]?.getUrl().startsWith('data:text/html,')
+        return if @model.uri.startsWith 'browser-plus:'
         favs = @model.browserPlus.fav
         if @fav.hasClass('active')
           @removeFav(@model)
@@ -376,7 +379,14 @@ class BrowserPlusView extends View
 
       @refresh.on 'click', (evt)=>
         return if @model.uri is 'browser-plus://history'
-        @htmlv[0]?.executeJavaScript "location.href = '#{@model.uri}'"
+        @refreshPage()
+
+  refreshPage: ->
+    if @model.realURL
+      htmlv = @model.view.htmlv[0]
+      @htmlv[0]?.executeJavaScript "location.href = '#{htmlv.getUrl()}'"
+    else
+      @htmlv[0]?.executeJavaScript "location.href = '#{@model.uri}'"
 
   goToUrl: (url)->
       return unless BrowserPlusModel.checkUrl(url)
@@ -389,6 +399,7 @@ class BrowserPlusView extends View
       @uri.val url
       @model.uri = url
       @htmlv.attr 'src',url
+      @model.realURL = undefined
 
   showDevTool: (evt)->
     @toggleDevTool() if evt[0].keyIdentifier is "F12"
@@ -436,7 +447,7 @@ class BrowserPlusView extends View
 
   addHistory: ->
     url = @htmlv[0]?.getUrl()
-    return if url.includes('browser-plus://') or url.includes('data:text/html,')
+    return if url.startsWith('browser-plus://') or url.startsWith('data:text/html,')
     yyyymmdd = ->
       date = new Date()
       yyyy = date.getFullYear().toString()

@@ -9,6 +9,7 @@ module.exports =
       @browserPlus = obj.browserPlus
       @uri = obj.uri
       @src = obj.src
+      @realURL = obj.realURL
       @disposable = new Disposable()
       @emitter = new Emitter
 
@@ -17,6 +18,9 @@ module.exports =
 
     setText: (text)->
       @view.setSrc(text)
+
+    refresh: ->
+      @view.refreshPage()
 
     destroyed: ->
       # @unsubscribe()
@@ -31,14 +35,17 @@ module.exports =
       @iconName
 
     getURI: ->
-      if @src?.includes('data:text/html,')
+      if @src?.startsWith('data:text/html,')
         # regex = new RegExp("<bp-uri>([\\s\\S]*?)</bp-uri>")
-        regex = /<meta\s?\S*?\s?bp-uri=['"](.*?)['"]\S*\/>/
-        match = @src.match(regex)
-        if match?[1]
-          @uri = "browser-plus://preview~#{match[1]}"
+        if @uri
+          @uri = "browser-plus://preview~#{@uri}"
         else
-          @uri = "browser-plus://preview~#{new Date().getTime()}.html"
+          regex = /<meta\s?\S*?\s?bp-uri=['"](.*?)['"]\S*\/>/
+          match = @src.match(regex)
+          if match?[1]
+            @uri = "browser-plus://preview~#{match[1]}"
+          else
+            @uri = "browser-plus://preview~#{new Date().getTime()}.html"
       else
         @uri
 

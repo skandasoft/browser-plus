@@ -3,7 +3,7 @@ var jQ, href, ipc;
 if (window['browser-plus'] == null) {
   ipc = require('ipc');
   href = location.href;
-  if (href.includes('data:text/html,')) {
+  if (href.startsWith('data:text/html,')) {
     href = null;
   }
   ipc.sendToHost('startup', {

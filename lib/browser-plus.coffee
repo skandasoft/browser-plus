@@ -70,7 +70,7 @@ module.exports = BrowserPlus =
                               ///i
          return false unless BrowserPlusModel.checkUrl(uri)
          uri = uri.replace(localhostPattern,'http://127.0.0.1')
-         bp = new BrowserPlusModel {browserPlus:@,uri:uri,src:opt.src}
+         bp = new BrowserPlusModel {browserPlus:@,uri:uri,src:opt.src,realURL:opt.realURL}
          if uri.indexOf('browser-plus://history') is 0
            bp.on 'destroyed', =>
              @histView = undefined
@@ -87,24 +87,27 @@ module.exports = BrowserPlus =
 
     # Register command that toggles this view
     @subscriptions.add atom.commands.add 'atom-workspace', 'browser-plus:open': => @open()
-    @subscriptions.add atom.commands.add 'atom-workspace', 'browser-plus:openCurrent': => @open(null,null,true)
+    @subscriptions.add atom.commands.add 'atom-workspace', 'browser-plus:openCurrent': => @open(true)
     @subscriptions.add atom.commands.add 'atom-workspace', 'browser-plus:history': => @hist()
     @subscriptions.add atom.commands.add 'atom-workspace', 'browser-plus:fav': => @favr()
 
   favr: ->
     new favList(@fav)
 
-  open: (split,src,current)->
-
-    if atom.config.get('browser-plus.currentFile') or current
-      editor = atom.workspace.getActiveTextEditor()
-      if uri = editor?.buffer?.getUri()
-        uri = "file:///"+uri
-    unless uri
-      uri = atom.config.get('browser-plus.homepage')
+  open: (url,src,split,realURL)->
+    if url and url isnt true
+      uri = url
+    else
+      if atom.config.get('browser-plus.currentFile') or url is true
+        editor = atom.workspace.getActiveTextEditor()
+        if uri = editor?.buffer?.getUri()
+          uri = "file:///"+uri
+      unless uri
+        uri = atom.config.get('browser-plus.homepage')
 
     split = @getPosition()  unless split
-    atom.workspace.open uri, {split:split,src:src}
+    uri = "browser-plus://preview~#{uri}" if src
+    atom.workspace.open uri, {split,src,realURL}
 
   hist: (uri='browser-plus://history',side='right')->
     atom.workspace.open uri, split:side
@@ -132,5 +135,10 @@ module.exports = BrowserPlus =
     title: @title
     resetAgain: true
 
+  registerEvt: (cb)->
+    debugger
+
   provideService: ->
-    BrowserPlusModel
+    model:BrowserPlusModel
+    open: @open.bind(@)
+    evt: @registerEvt.bind(@)
