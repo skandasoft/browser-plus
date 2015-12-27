@@ -16,6 +16,8 @@ class BrowserPlusView extends View
     @subscriptions = new CompositeDisposable
     @model.view = @
     @model.onDidDestroy =>
+      # dispose so there aren't dangling subscriptions
+      @subscriptions.dispose()
       jQ(@uri).autocomplete('destroy')
     super
 
@@ -42,6 +44,7 @@ class BrowserPlusView extends View
           @span id:'history',class:'mega-octicon octicon-book',outlet: 'history'
           @span id:'fav',class:'mega-octicon octicon-star',outlet: 'fav'
           @span id:'favList', class:'octicon octicon-arrow-down',outlet: 'favList'
+          @a class:"fa fa-spinner", outlet: 'spinner'
 
         @div class:'nav-btns', =>
           @div class: 'nav-btns-right', =>
@@ -122,6 +125,9 @@ class BrowserPlusView extends View
       @subscriptions.add atom.tooltips.add @fav, title: 'Favoritize'
       @subscriptions.add atom.tooltips.add @live, title: 'Live'
       @subscriptions.add atom.tooltips.add @devtool, title: 'Dev Tools-f12'
+      @subscriptions.add atom.tooltips.add @spinner, title: 'spinner'
+      @subscriptions.add atom.commands.add '.browser-plus webview', 'browser-plus-view:goBack': => @goBack()
+      @subscriptions.add atom.commands.add '.browser-plus webview', 'browser-plus-view:goForward': => @goForward()
       @liveOn = false
       @subscriptions.add atom.tooltips.add @thumbs, title: 'Preview'
       @element.onkeydown = =>@showDevTool(arguments)
@@ -334,7 +340,11 @@ class BrowserPlusView extends View
       #
       # #
       @htmlv[0]?.addEventListener "did-start-loading", =>
+        @spinner.removeClass 'fa-custom'
         @htmlv[0]?.shadowRoot.firstChild.style.height = '95%'
+
+      @htmlv[0]?.addEventListener "did-stop-loading", =>
+        @spinner.addClass 'fa-custom'
 
       @history.on 'click',(evt)=>
         atom.workspace.open 'browser-plus://history' , {split: 'left',searchAllPanes:true}
@@ -350,6 +360,9 @@ class BrowserPlusView extends View
       @forward.on 'click', (evt)=>
         if @htmlv[0]?.canGoForward() and $(` this`).hasClass('active')
           @htmlv[0]?.goForward()
+
+      @uri.on 'click',(evt)=>
+        ` this.select()`
 
       @uri.on 'keypress',(evt)=>
         if evt.which is 13
@@ -400,6 +413,12 @@ class BrowserPlusView extends View
       @model.uri = url
       @htmlv.attr 'src',url
       @model.realURL = undefined
+
+  goBack: ->
+    @back.click()
+
+  goForward: ->
+    @forward.click()
 
   showDevTool: (evt)->
     @toggleDevTool() if evt[0].keyIdentifier is "F12"

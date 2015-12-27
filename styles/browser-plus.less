@@ -4,6 +4,7 @@
 // for a full listing of what's available.
 @import "ui-variables";
 @import "octicon-utf-codes";
+@import "font-awesome.min.css";
 
 .browser-plus  #title{
   width:100%;
@@ -213,10 +214,28 @@ webview::shadow{
   overflow:hidden;
 }
 
+@keyframes spin {
+    from {transform:rotate(0deg);}
+    to {transform:rotate(360deg);}
+}
+
+.fa-spinner {
+  animation-name: spin;
+  animation-duration: 1000ms;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+}
+
+.fa-custom {
+  display: none !important;
+}
+
 .nav-btns-left{
+  background-color: #21252b;
   float:left;
 }
 
 .nav-btns-right{
+  background-color: #21252b;
   float:right;
 }
