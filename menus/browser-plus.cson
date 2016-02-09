@@ -2,7 +2,7 @@
 'context-menu':
   'atom-text-editor': [
     {
-      'label': 'Open browser-plus'
+      'label': 'Open Browser-Plus'
       'command': 'browser-plus:open'
     }
 
