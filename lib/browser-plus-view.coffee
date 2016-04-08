@@ -31,7 +31,7 @@ class BrowserPlusView extends View
       if src.startsWith "data:text/html,"
         url = src
       else
-        url = "data:text/html, #{src}"
+        url = "data:text/html,#{src}"
     if params.realURL
       url = params.realURL
     @div class:'browser-plus', =>
