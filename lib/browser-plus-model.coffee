@@ -25,6 +25,8 @@ module.exports =
       @emitter.on 'did-destroy', cb
 
     getTitle: ->
+      if @title?.length > 20
+        @title = @title[0...20]+'...'
       @title or path.basename(@uri)
 
     getIconName: ->

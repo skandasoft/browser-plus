@@ -11,6 +11,12 @@
   'ctrl-alt-o': 'browser-plus:open',
   'ctrl-alt-h': 'browser-plus:history'
 
+'.browser-plus':
+  'escape': 'browser-plus-view:findOff'
+  'cmd-f': 'browser-plus-view:findOn'
+  'cmd-=': 'browser-plus-view:zoomIn'
+  'cmd--': 'browser-plus-view:zoomOut'
+
 '.browser-plus webview':
     'tab':       'native!'
     'shift-tab': 'native!'
