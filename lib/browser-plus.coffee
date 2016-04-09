@@ -1,8 +1,5 @@
 {CompositeDisposable} = require 'atom'
-BrowserPlusModel = require './browser-plus-model'
-BrowserPlusView = require './browser-plus-view'
-favList = require './fav-view'
-fs = require 'fs'
+# fs = require 'fs'
 module.exports = BrowserPlus =
   browserPlusView: null
   subscriptions: null
@@ -52,13 +49,14 @@ module.exports = BrowserPlus =
     @favIcon = state.favIcon or {}
     @title = state.title or {}
     resources = "#{atom.packages.getLoadedPackage('browser-plus').path}/resources/"
-    @js = fs.readFileSync "#{resources}browser-plus-client.js",'utf-8'
-    @CSSjs = fs.readFileSync "#{resources}CSSUtilities.js",'utf-8'
+    #@js = fs.readFileSync "#{resources}browser-plus-client.js",'utf-8'
+    #@CSSjs = fs.readFileSync "#{resources}CSSUtilities.js",'utf-8'
     # @JQueryjs = fs.readFileSync "#{resources}jquery-2.1.4.min.js",'utf-8'
-    @JQueryjs = fs.readFileSync "#{resources}jquery-1.11.3.min.js",'utf-8'
-    @Selectorjs = fs.readFileSync "#{resources}selector.js",'utf-8'
+    #@JQueryjs = fs.readFileSync "#{resources}jquery-1.11.3.min.js",'utf-8'
+    #@Selectorjs = fs.readFileSync "#{resources}selector.js",'utf-8'
     @clientJS = "#{resources}bp-client.js"
     atom.workspace.addOpener (uri,opt)=>
+      BrowserPlusModel = require './browser-plus-model'
       path = require 'path'
       if ( path.extname(uri) is '.htmlp' or
           uri.indexOf('http:') is 0 or uri.indexOf('https:') is 0 or
@@ -92,6 +90,7 @@ module.exports = BrowserPlus =
     @subscriptions.add atom.commands.add 'atom-workspace', 'browser-plus:fav': => @favr()
 
   favr: ->
+    favList = require './fav-view'
     new favList(@fav)
 
   open: (url,src,split,realURL)->
@@ -122,7 +121,7 @@ module.exports = BrowserPlus =
     if orientation is 'horizontal'
       if  paneIndex is 0 then 'right' else 'left'
     else
-      if  paneIndex is 0 then 'down' else 'top'
+      if  paneIndex is 0 then 'down' else 'up'
 
   deactivate: ->
     # @browserPlusView.destroy?()
@@ -139,6 +138,7 @@ module.exports = BrowserPlus =
     debugger
 
   provideService: ->
+    BrowserPlusModel = require './browser-plus-model'
     model:BrowserPlusModel
     open: @open.bind(@)
     evt: @registerEvt.bind(@)

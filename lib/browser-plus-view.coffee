@@ -1,16 +1,11 @@
 {CompositeDisposable}  = require 'atom'
-
 {View,$} = require 'atom-space-pen-views'
-loophole = require './eval'
-fs = require 'fs'
-URL = require 'url'
-jQ = require '../node_modules/jquery/dist/jquery.js'
-require 'jquery-ui/autocomplete'
-BrowserPlusModel = require './browser-plus-model'
-_ = require 'lodash'
+
 # riot = require 'riot'
 # require 'riotgear'
-favList = require './fav-view'
+jQ = require '../node_modules/jquery/dist/jquery.js'
+require 'jquery-ui/autocomplete'
+
 module.exports =
 class BrowserPlusView extends View
   constructor: (@model)->
@@ -75,6 +70,7 @@ class BrowserPlusView extends View
 
   initialize: ->
       src = (req,res)=>
+        _ = require 'lodash'
         # check favorites
         pattern = ///
                     #{req.term}
@@ -171,6 +167,7 @@ class BrowserPlusView extends View
 
           if e.message.includes('~browser-plus-hist-delete~')
             item = e.message.replace('~browser-plus-hist-delete~','')
+            loophole = require './eval'
             item = loophole.allowUnsafeEval ->
                       eval "(#{item})"
             MOMENT = require "../resources/moment.min.js"
@@ -198,6 +195,7 @@ class BrowserPlusView extends View
             indx = data.indexOf(' ')
             uri = data.substr(0,indx)
             title = data.substr(indx + 1)
+            BrowserPlusModel = require './browser-plus-model'
             unless BrowserPlusModel.checkUrl(uri)
               uri = atom.config.get('browser-plus.homepage') or "http://www.google.com"
               atom.notifications.addSuccess("Redirecting to #{uri}")
@@ -360,6 +358,7 @@ class BrowserPlusView extends View
         @spinner.addClass 'fa-custom'
 
       @htmlv[0]?.addEventListener "dom-ready", =>
+        fs = require 'fs'
         findCSS = fs.readFileSync "#{@resources}highlight.css", "utf-8"
         findJS = fs.readFileSync "#{@resources}jquery.highlight.js", "utf-8"
         @htmlv[0].insertCSS(findCSS)
@@ -374,6 +373,7 @@ class BrowserPlusView extends View
           @htmlv[0]?.goBack()
 
       @favList.on 'click', (evt)=>
+        favList = require './fav-view'
         new favList(@model.browserPlus.fav)
 
       @forward.on 'click', (evt)=>
@@ -384,6 +384,7 @@ class BrowserPlusView extends View
         @uri.select()
 
       @find.on 'keyup',(evt)=>
+        fs = require 'fs'
         if evt.which is 13
           highlightJS = fs.readFileSync "#{@resources}highlight.js", "utf-8"
           @htmlv[0].executeJavaScript(highlightJS)
@@ -397,6 +398,7 @@ class BrowserPlusView extends View
           """)
 
       @uri.on 'keypress',(evt)=>
+        URL = require 'url'
         if evt.which is 13
           @uri.blur()
           urls = URL.parse(` this.value`)
@@ -435,6 +437,7 @@ class BrowserPlusView extends View
       @htmlv[0]?.executeJavaScript "location.href = '#{@model.uri}'"
 
   goToUrl: (url)->
+      BrowserPlusModel = require './browser-plus-model'
       return unless BrowserPlusModel.checkUrl(url)
       jQ(@uri).autocomplete("close")
       @select.removeClass 'active'

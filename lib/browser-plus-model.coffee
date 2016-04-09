@@ -1,3 +1,4 @@
+# http://www.skandasoft.com/
 {Disposable,Emitter} = require 'atom'
 {Model} = require 'theorist'
 # {CompositeDisposable, Emitter} = require 'event-kit'
