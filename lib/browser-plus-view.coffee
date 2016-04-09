@@ -275,7 +275,7 @@ class BrowserPlusView extends View
         @live.toggleClass('active',@liveOn)
         if @liveOn
           # @htmlv[0]?.executeJavaScript "location.href = '#{@model.uri}'"
-          @refresh()
+          @refreshPage()
           @liveSubscription = new CompositeDisposable
           @liveSubscription.add atom.workspace.observeTextEditors (editor)=>
                     @liveSubscription.add editor.onDidSave =>
