@@ -9,7 +9,7 @@ module.exports =
     constructor: (obj)->
       @browserPlus = obj.browserPlus
       @src = obj.src
-      @realURL = obj.realURL or obj.uri
+      @realURL = obj.realURL #or obj.uri
       # URL = require('url')
       # url = URL.parse(obj.uri)
       # @uri = url.hostname
