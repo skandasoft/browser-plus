@@ -358,11 +358,12 @@ class BrowserPlusView extends View
         @spinner.addClass 'fa-custom'
 
       @htmlv[0]?.addEventListener "dom-ready", =>
-        fs = require 'fs'
-        findCSS = fs.readFileSync "#{@resources}highlight.css", "utf-8"
-        findJS = fs.readFileSync "#{@resources}jquery.highlight.js", "utf-8"
-        @htmlv[0].insertCSS(findCSS)
-        @htmlv[0].executeJavaScript(findJS)
+        if 1 is 0
+          fs = require 'fs'
+          findCSS = fs.readFileSync "#{@resources}highlight.css", "utf-8"
+          findJS = fs.readFileSync "#{@resources}jquery.highlight.js", "utf-8"
+          @htmlv[0].insertCSS(findCSS)
+          @htmlv[0].executeJavaScript(findJS)
 
       @history.on 'click',(evt)=>
         atom.workspace.open 'browser-plus://history' , {split: 'left',searchAllPanes:true}
