@@ -8,9 +8,12 @@ module.exports =
     atom.deserializers.add(this)
     constructor: (obj)->
       @browserPlus = obj.browserPlus
-      @uri = obj.uri
       @src = obj.src
-      @realURL = obj.realURL
+      @realURL = obj.realURL or obj.uri
+      # URL = require('url')
+      # url = URL.parse(obj.uri)
+      # @uri = url.hostname
+      @uri = obj.uri
       @disposable = new Disposable()
       @emitter = new Emitter
 
@@ -38,6 +41,11 @@ module.exports =
       @iconName
 
     getURI: ->
+      # urls = atom.config.get('browser-plus.openSameWindow')
+      # URL = require('url')
+      # uri = URL.parse(@uri)
+      # if uri.hostname in urls
+      #   return uri.hostname
       if @src?.startsWith('data:text/html,')
         # regex = new RegExp("<bp-uri>([\\s\\S]*?)</bp-uri>")
         if @uri

@@ -1,5 +1,4 @@
 # browser-plus package
-### Node Integration has been made as optional(config- as this became security issue..) and is switched off by default
 
 Real Browser in ATOM
 
