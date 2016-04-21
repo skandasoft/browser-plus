@@ -334,11 +334,19 @@ class BrowserPlusView extends View
         if @fav.hasClass('active')
           @removeFav(@model)
         else
+          fs = require 'fs'
           data = {
             uri: @model.uri
             title: @model.browserPlus.title[@model.uri] or @model.uri
             favIcon: @model.browserPlus.favIcon[@model.uri]
           }
+          fs.readFile '/tmp/.atom-browser-plus-fav.json', 'utf-8', (err, txt)->
+            dataList = []
+            if not err
+              dataList = JSON.parse txt
+            dataList.push data
+            dataJson = JSON.stringify dataList
+            fs.writeFile '/tmp/.atom-browser-plus-fav.json', dataJson
           favs.push data
           delCount = favs.length - atom.config.get 'browser-plus.fav'
           favs.splice 0, delCount if delCount > 0
@@ -375,7 +383,13 @@ class BrowserPlusView extends View
 
       @favList.on 'click', (evt)=>
         favList = require './fav-view'
-        new favList(@model.browserPlus.fav)
+        # new favList(@model.browserPlus.fav)
+        fs = require 'fs'
+        fs.readFile '/tmp/.atom-browser-plus-fav.json', 'utf-8', (err, txt)->
+          if not err
+            return new favList(JSON.parse(txt))
+          else
+            return new favList([])
 
       @forward.on 'click', (evt)=>
         if @htmlv[0]?.canGoForward() and $(` this`).hasClass('active')

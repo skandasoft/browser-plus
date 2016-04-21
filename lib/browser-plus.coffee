@@ -94,7 +94,13 @@ module.exports = BrowserPlus =
 
   favr: ->
     favList = require './fav-view'
-    new favList(@fav)
+    # new favList(@fav)
+    fs = require 'fs'
+    fs.readFile '/tmp/.atom-browser-plus-fav.json', 'utf-8', (err, txt)->
+      if not err
+        new favList(JSON.parse(txt))
+      else
+        new favList([])
 
   open: (url,src,split,realURL)->
     if url and url isnt true
