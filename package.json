@@ -1,7 +1,7 @@
 {
   "name": "browser-plus-fix",
   "main": "./lib/browser-plus",
-  "version": "0.0.60",
+  "version": "0.1.0",
   "description": "Browser Plus",
   "repository": "https://github.com/fusion809/browser-plus",
   "license": "MIT",
