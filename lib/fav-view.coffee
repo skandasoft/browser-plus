@@ -14,7 +14,7 @@ class FavView extends SelectListView
       "<li><img src='#{item.favIcon}'width='20' height='20' >&nbsp; &nbsp; #{item.title?[0..30]}</li>"
 
   confirmed: (item)->
-      atom.workspace.open item.uri, {split:'left',searchAllPanes:true}
+      atom.workspace.open item.url, {split:'left',searchAllPanes:true}
       @parent().remove()
 
   cancelled: ->

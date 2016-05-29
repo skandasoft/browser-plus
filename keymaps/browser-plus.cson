@@ -8,14 +8,11 @@
 # For more detailed documentation see
 # https://atom.io/docs/latest/advanced/keymaps
 'atom-workspace':
-  'ctrl-alt-o': 'browser-plus:open',
-  'ctrl-alt-h': 'browser-plus:history'
+  'ctrl-alt-o': 'browser-plus:open'
 
 '.browser-plus':
-  'escape': 'browser-plus-view:findOff'
-  'cmd-f': 'browser-plus-view:findOn'
-  'cmd-=': 'browser-plus-view:zoomIn'
-  'cmd--': 'browser-plus-view:zoomOut'
+  'f11': 'browser-plus-view:toggleURLBar'
+
 
 '.browser-plus webview':
     'tab':       'native!'

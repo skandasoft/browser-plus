@@ -19,6 +19,9 @@
 .ui-helper-hidden-accessible {
   display:none;
 }
+.browser-plus .hideURLBar{
+  display: none;
+}
 .ui-autocomplete {
     position: absolute;
     top: 100%;
@@ -69,12 +72,7 @@ border-radius: 0px;
 -moz-border-radius: 0px;
 }
 
-@font-face {
-  font-family: "fontello-print";
-  font-style: normal;
-  font-weight: normal;
-  src: url(atom://browser-plus/resources/fontello/font/fontello.woff) format('woff')
-}
+
 
 .icon-browser-pluss {
   font-family: "fontello-print";
@@ -116,20 +114,20 @@ border-radius: 0px;
 
 .icon-print:before { content: '\e800'; } /* '' */
 
-.browser-plus  #lbl-uri{
+.browser-plus  #lbl-url{
   color:green;
   font-size:18px;
   height:1.25ln;
 }
-.browser-plus  #uri{
+.browser-plus  #url{
   height:1.25ln;
   font-size:18px;
   color:green;
 }
-.browser-plus  .uri{
+.browser-plus  .url{
   width:100%;
 }
-.browser-plus .uri input{
+.browser-plus .url input{
   width:100%;
 }
 .browser-plus  .nav-btns{
@@ -210,7 +208,7 @@ webview::shadow{
   background-color: lightblue;
 }
 
-.input-uri {
+.input-url {
   overflow:hidden;
 }
 
@@ -254,4 +252,11 @@ webview::shadow{
 .nav-btns-right{
   background-color: #21252b;
   float:right;
+}
+
+@font-face {
+  font-family: "fontello-print";
+  font-style: normal;
+  font-weight: normal;
+  src: url(atom://browser-plus/resources/fontello/font/fontello.woff) format('woff')
 }
