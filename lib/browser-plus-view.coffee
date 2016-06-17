@@ -229,7 +229,7 @@ class BrowserPlusView extends View
 
       @htmlv[0]?.addEventListener "page-favicon-updated", (e)=>
         @model.browserPlus.favIcon[@model.uri] = icon = e.favicons[0]
-        @model.iconName = Math.floor(Math.random()*10000)
+        @model.iconName = Math.floor(Math.random()*10000).toString()
         @model.updateIcon()
         style = document.createElement('style')
         style.type = 'text/css'
