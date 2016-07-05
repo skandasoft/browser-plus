@@ -1,7 +1,7 @@
 {
   "name": "browser-plus",
   "main": "./lib/browser-plus",
-  "version": "0.0.61",
+  "version": "0.0.62",
   "description": "Browser Plus",
   "repository": "https://github.com/skandasoft/browser-plus",
   "license": "MIT",
@@ -14,8 +14,8 @@
     "jquery-ui": "^1.10.5",
     "theorist": "^1.0.2",
     "lodash": "^3.10.1",
-    "jstorage":"^0.4.8",
-    "JSON2":"^0.1.0"
+    "jstorage": "^0.4.8",
+    "JSON2": "^0.1.0"
   },
   "providedServices": {
     "browser-plus": {
