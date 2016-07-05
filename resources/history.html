@@ -1,0 +1,23 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Browser-Plus:History</title>
+    <script src='json2.min.js'></script>
+    <script src='jstorage.min.js'></script>
+    <script src='riot.min.js'></script>
+    <script src='moment.min.js'></script>
+  </head>
+  <body>
+
+    <hist></hist>
+
+    <script src="history.js"></script>
+    <script>
+      histTag = riot.mount('hist')[0];
+      $.jStorage.listenKeyChange("bp.history",function(key,action){
+        histTag.opts.hist = $.jStorage.get('bp.history');
+        histTag.update()
+      })
+    </script>
+  </body>
+</html>
