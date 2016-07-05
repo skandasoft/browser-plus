@@ -3,7 +3,6 @@
 $ = jQ = require 'jquery'
 require 'jquery-ui/autocomplete'
 path = require 'path'
-# ss = require 'simplestorage.js'
 require 'JSON2'
 require 'jstorage'
 

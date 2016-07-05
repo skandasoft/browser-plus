@@ -59,7 +59,6 @@ module.exports =
       @emit 'icon-changed'
 
     serialize: ->
-      ss = require('simplestorage.js')
       data:
         browserPlus: @browserPlus
         url: @url
