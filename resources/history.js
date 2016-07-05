@@ -163,9 +163,8 @@ this["delete"] = (function(_this) {
         break;
       }
     }
-    _this.itms.splice(idx, 1);
     $.jStorage.set('bp.history', history);
-    if (_this.itms.length === 0) {
+    if (thatDay.length === 0) {
       return _this.deleteDate();
     }
   };

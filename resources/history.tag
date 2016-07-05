@@ -156,9 +156,9 @@
         if thatDay = hist[@date]
           thatDay.splice(idx, 1)
           break
-      @itms.splice(idx,1)
+      # @itms.splice(idx,1)
       $.jStorage.set('bp.history',history)
-      if @itms.length is 0
+      if thatDay.length is 0
         @deleteDate()
 
   </script>
