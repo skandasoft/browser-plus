@@ -169,11 +169,7 @@ class BrowserPlusView extends View
         uri = @htmlv[0].getUrl()
         favIcon[uri] = e.favicons[0]
         window.$.jStorage.set('bp.favIcon',favIcon)
-
-        @model.browserPlus.favIcon[@model.uri] = icon = e.favicons[0]
-        @model.iconName = Math.floor(Math.random()*10000).toString()
         @model.updateIcon()
->>>>>>> 4d6fcdd6a5c21e0661eedac3811daa94992ec579
         style = document.createElement('style')
         style.type = 'text/css'
         style.innerHTML = """
