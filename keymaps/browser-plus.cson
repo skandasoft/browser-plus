@@ -10,12 +10,11 @@
 'atom-workspace':
   'ctrl-alt-o': 'browser-plus:open'
 
-'.browser-plus':
-  'f11': 'browser-plus-view:toggleURLBar'
+# '.browser-plus':
 
 
 '.browser-plus webview':
-    'tab':       'native!'
+    'tab':   'native!'
     'shift-tab': 'native!'
     'click': 'native!'
     # 'backspace': 'native!'
@@ -31,3 +30,4 @@
     'alt-left': 'browser-plus-view:goBack'
     'alt-right': 'browser-plus-view:goForward'
     'f12': 'browser-plus:openDevTool'
+    'f11': 'browser-plus-view:toggleURLBar'

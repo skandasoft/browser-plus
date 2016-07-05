@@ -1,5 +1,8 @@
+# atom.project.resolvePath
 {CompositeDisposable} = require 'atom'
-
+BrowserPlusModel = require './browser-plus-model'
+require 'JSON2'
+require 'jstorage'
 module.exports = BrowserPlus =
   browserPlusView: null
   subscriptions: null
@@ -11,7 +14,7 @@ module.exports = BrowserPlus =
     homepage:
       title: 'HomePage'
       type: 'string'
-      default: 'http://www.google.com'
+      default: 'browser-plus://blank'
     live:
       title: 'Live Refresh in '
       type: 'number'
@@ -20,30 +23,43 @@ module.exports = BrowserPlus =
       title: 'Show Current File'
       type: 'boolean'
       default: true
+    openInSameWindow:
+      title: 'Open URLs in Same Window'
+      type: 'array'
+      default: ['www.google.com','www.stackoverflow.com','google.com','stackoverflow.com']
 
   activate: (state) ->
     unless state.noReset
       state.favIcon = {}
       state.title = {}
       state.fav = []
+    @resources = "#{atom.packages.getPackageDirPaths()[0]}/browser-plus/resources/"
+    window.$.jStorage.set('bp.fav',[]) unless window.$.jStorage.get('bp.fav')
+    window.$.jStorage.set('bp.history',[])  unless window.$.jStorage.get('bp.history')
+    window.$.jStorage.set('bp.favIcon',{})  unless window.$.jStorage.get('bp.favIcon')
+    window.$.jStorage.set('bp.title',{})  unless window.$.jStorage.get('bp.title')
 
-    @fav = state.fav or []
-    @favIcon = state.favIcon or {}
-    @title = state.title or {}
-    resources = "#{atom.packages.getLoadedPackage('browser-plus').path}/resources"
-
-    @clientJS = "#{resources}bp-client.js"
-    atom.workspace.addOpener (url,opt)=>
-      BrowserPlusModel = require './browser-plus-model'
+    atom.workspace.addOpener (url,opt={})=>
       path = require 'path'
       if ( url.indexOf('http:') is 0 or url.indexOf('https:') is 0 or
           url.indexOf('localhost') is 0 or url.indexOf('file:') is 0 or
-          url.indexOf('browser-plus:') is 0 ) #or opt.src
+          url.indexOf('browser-plus:') is 0   or #or opt.src
+          url.indexOf('browser-plus~') is 0 )
          localhostPattern = ///^
                               (http://)?
                               localhost
                               ///i
          return false unless BrowserPlusModel.checkUrl(url)
+         #  check if it need to be open in same window
+         unless url is 'browser-plus://blank'
+           editor = BrowserPlusModel.getEditorForURI(url,opt.openInSameWindow)
+           if editor
+             editor.setText(opt.src)
+             editor.refresh(url) unless opt.src
+             pane = atom.workspace.paneForItem(editor)
+             pane.activateItem(editor)
+             return editor
+
          url = url.replace(localhostPattern,'http://127.0.0.1')
          new BrowserPlusModel {browserPlus:@,url:url,opt:opt}
 
@@ -53,11 +69,21 @@ module.exports = BrowserPlus =
     # Register command that toggles this view
     @subscriptions.add atom.commands.add 'atom-workspace', 'browser-plus:open': => @open()
     @subscriptions.add atom.commands.add 'atom-workspace', 'browser-plus:openCurrent': => @open(true)
+    @subscriptions.add atom.commands.add 'atom-workspace', 'browser-plus:history': => @history(true)
+    @subscriptions.add atom.commands.add 'atom-workspace', 'browser-plus:deleteHistory': => @delete(true)
     @subscriptions.add atom.commands.add 'atom-workspace', 'browser-plus:fav': => @favr()
 
   favr: ->
     favList = require './fav-view'
+
     new favList(@fav)
+
+  delete: ->
+    $.jStorage.set('bp.history',[])
+
+  history: ->
+    # file:///#{@resources}history.html
+    atom.workspace.open "browser-plus://history" , {split: 'left',searchAllPanes:true}
 
   open: (url,opt = {})->
     if url is true or atom.config.get('browser-plus.currentFile')
@@ -88,13 +114,16 @@ module.exports = BrowserPlus =
     @subscriptions.dispose()
 
   serialize: ->
-    fav: @fav
-    favIcon: @favIcon
-    title: @title
     noReset: true
 
   registerEvt: (cb)->
     debugger
+
+  getBrowserPlusUrl: (url)->
+    if url.startsWith('browser-plus://history')
+      url = "#{@resources}history.html"
+    else
+      url = ''
 
   provideService: ->
     BrowserPlusModel = require './browser-plus-model'
