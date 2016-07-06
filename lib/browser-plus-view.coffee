@@ -35,7 +35,7 @@ class BrowserPlusView extends View
         params.src = "data:text/html,#{params.src}"
       url = params.src
     if params.url.startsWith "browser-plus://"
-      url = params.browserPlus.getBrowserPlusUrl(url)
+      url = params.browserPlus?.getBrowserPlusUrl?(url)
 
     @div class:'browser-plus', =>
       @div class:"url native-key-bindings #{hideURLBar}",outlet:'urlbar', =>
