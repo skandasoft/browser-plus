@@ -11,6 +11,8 @@ class FavView extends SelectListView
     @focusFilterEditor()
 
   viewForItem: (item)->
+      unless item.favIcon
+        item.favIcon = window.$.jStorage.get('bp.favIcon')?[item.url]
       "<li><img src='#{item.favIcon}'width='20' height='20' >&nbsp; &nbsp; #{item.title?[0..30]}</li>"
 
   confirmed: (item)->

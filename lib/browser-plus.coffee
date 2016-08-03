@@ -75,8 +75,7 @@ module.exports = BrowserPlus =
 
   favr: ->
     favList = require './fav-view'
-
-    new favList(@fav)
+    new favList window.$.jStorage.get('bp.fav')
 
   delete: ->
     $.jStorage.set('bp.history',[])
