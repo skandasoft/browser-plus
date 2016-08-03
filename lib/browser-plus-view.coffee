@@ -1,7 +1,7 @@
 {CompositeDisposable}  = require 'atom'
 {View,$} = require 'atom-space-pen-views'
 $ = jQ = require '../node_modules/jquery/dist/jquery.js'
-require 'jquery-ui/autocomplete'
+require '../node_modules/jquery-ui/autocomplete'
 path = require 'path'
 require 'JSON2'
 require 'jstorage'
