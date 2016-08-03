@@ -31,10 +31,10 @@ class BrowserPlusView extends View
       params.src = BrowserPlusView.checkBase(params.opt.src,params.url)
       # params.src = params.src.replace(/"/g,'&quot;')
       params.src = params.src.replace(/"/g,"'")
-      unless params.src.startsWith "data:text/html,"
+      unless params.src?.startsWith "data:text/html,"
         params.src = "data:text/html,#{params.src}"
       url = params.src
-    if params.url.startsWith "browser-plus://"
+    if params.url?.startsWith "browser-plus://"
       url = params.browserPlus?.getBrowserPlusUrl?(url)
 
     @div class:'browser-plus', =>
