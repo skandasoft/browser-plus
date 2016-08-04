@@ -2,8 +2,6 @@
 {View,$} = require 'atom-space-pen-views'
 $ = jQ = require '../node_modules/jquery/dist/jquery.js'
 
-# jQACPath = "#{atom.packages.getActivePackage('browser-plus').path}/node_modules/jquery-ui/autocomplete.js"
-# require jQACPath
 jQACPath = "#{atom.packages.getPackageDirPaths()[0]}/browser-plus/node_modules/jquery-ui/autocomplete.js"
 require jQACPath
 path = require 'path'
