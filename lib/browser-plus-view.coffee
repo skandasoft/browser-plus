@@ -1,9 +1,7 @@
 {CompositeDisposable}  = require 'atom'
 {View,$} = require 'atom-space-pen-views'
 $ = jQ = require '../node_modules/jquery/dist/jquery.js'
-
-jQACPath = "#{atom.packages.getPackageDirPaths()[0]}/browser-plus/node_modules/jquery-ui/autocomplete.js"
-require jQACPath
+require 'jquery-ui/autocomplete'
 path = require 'path'
 require 'JSON2'
 require 'jstorage'
