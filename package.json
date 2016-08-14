@@ -14,7 +14,8 @@
     "theorist": "^1.0.2",
     "lodash": "^3.10.1",
     "jstorage": "^0.4.8",
-    "JSON2": "^0.1.0"
+    "JSON2": "^0.1.0",
+    "cheerio": "^0.20.0"
   },
   "providedServices": {
     "browser-plus": {
