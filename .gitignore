@@ -1,5 +1,4 @@
 .DS_Store
 npm-debug.log
 todo
-node_modules
-!node_modules/jquery-ui
+node_modules/*

@@ -5,7 +5,7 @@ class FavView extends SelectListView
   initialize: (@items)->
     super
     @addClass 'overlay from-top'
-    @setItems items
+    @setItems @items
     @panel ?= atom.workspace.addModalPanel item:@
     @panel.show()
     @focusFilterEditor()

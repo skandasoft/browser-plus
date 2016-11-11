@@ -1,19 +1,21 @@
 # http://www.skandasoft.com/
 {Disposable,Emitter} = require 'atom'
 {Model} = require 'theorist'
+{BrowserPlus} = require './browser-plus'
 path = require 'path'
 fs = require 'fs'
 module.exports =
   class HTMLEditor extends Model
     atom.deserializers.add(this)
-    constructor: ({ @browserPlus,@url,@opt }) ->
+    constructor: ({ @browserPlus ,@url,@opt }) ->
+      @browserPlus = JSON.parse(@browserPlus) if typeof @browserPlus is 'string'
       @opt = {} unless @opt
       @disposable = new Disposable()
       @emitter = new Emitter
       @src = @opt.src
       @orgURI = @opt.orgURI
       @_id = @opt._id
-      unless @browserPlus.setContextMenu
+      if @browserPlus and not @browserPlus.setContextMenu
         @browserPlus.setContextMenu = true
         for menu in atom.contextMenu.itemSets
           if menu.selector is 'atom-pane'
@@ -60,7 +62,8 @@ module.exports =
 
     serialize: ->
       data:
-        browserPlus: @browserPlus
+        # browserPlus: JSON.stringify(@browserPlus)
+        browserPlus: JSON.stringify(@browserPlus)
         url: @url
         opt:
           src:  @src

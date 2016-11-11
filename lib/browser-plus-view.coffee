@@ -5,7 +5,10 @@ require 'jquery-ui/autocomplete'
 path = require 'path'
 require 'JSON2'
 require 'jstorage'
+fs = require 'fs'
 
+RegExp.escape= (s)->
+  s.replace /[-\/\\^$*+?.()|[\]{}]/g, '\\$&'
 
 module.exports =
 class BrowserPlusView extends View
@@ -33,7 +36,7 @@ class BrowserPlusView extends View
       params.src = params.src.replace(/"/g,"'")
       unless params.src?.startsWith "data:text/html,"
         params.src = "data:text/html,#{params.src}"
-      url = params.src
+      url = params.src unless url
     if params.url?.startsWith "browser-plus://"
       url = params.browserPlus?.getBrowserPlusUrl?(url)
 
@@ -69,7 +72,7 @@ class BrowserPlusView extends View
         _ = require 'lodash'
         # check favorites
         pattern = ///
-                    #{req.term}
+                    #{RegExp.escape req.term}
                   ///i
 
         fav = _.filter window.$.jStorage.get('bp.fav'),(fav)->
@@ -150,9 +153,46 @@ class BrowserPlusView extends View
           @checkFav()
           @addHistory()
 
-        if e.message.includes('~browser-plus-jquery~')
-          @model.browserPlus.jQueryJS ?= BrowserPlusView.getJQuery()
-          @htmlv[0]?.executeJavaScript @model.browserPlus.jQueryJS
+        if e.message.includes('~browser-plus-jquery~') or e.message.includes('~browser-plus-menu~')
+          if e.message.includes('~browser-plus-jquery~')
+            @model.browserPlus.jQueryJS ?= BrowserPlusView.getJQuery.call @
+            @htmlv[0]?.executeJavaScript @model.browserPlus.jQueryJS
+
+          @model.browserPlus.jStorageJS ?= BrowserPlusView.getJStorage.call @
+          @htmlv[0]?.executeJavaScript @model.browserPlus.jStorageJS
+
+          @model.browserPlus.hotKeys ?= BrowserPlusView.getHotKeys.call @
+          @htmlv[0]?.executeJavaScript @model.browserPlus.hotKeys
+
+          @model.browserPlus.notifyBar ?= BrowserPlusView.getNotifyBar.call @
+          @htmlv[0]?.executeJavaScript @model.browserPlus.notifyBar
+
+          if inits = @model.browserPlus.plugins?.onInit
+            for init in inits
+              # init = "(#{init.toString()})()"
+              @htmlv[0]?.executeJavaScript init
+          if jss = @model.browserPlus.plugins?.jss
+            for js in jss
+              @htmlv[0]?.executeJavaScript BrowserPlusView.loadJS(js,true)
+
+          if csss = @model.browserPlus.plugins?.csss
+            for css in csss
+              @htmlv[0]?.executeJavaScript BrowserPlusView.loadCSS(css,true)
+
+          if menus = @model.browserPlus.plugins?.menus
+            for menu in menus
+              menu.fn = menu.fn.toString() if menu.fn
+              menu.selectorFilter = menu.selectorFilter.toString() if menu.selectorFilter
+              @htmlv[0]?.executeJavaScript "browserPlus.menu(#{JSON.stringify(menu)})"
+          # @model.browserPlus.bpStyle ?= BrowserPlusView.getbpStyle.call @
+          # @htmlv[0]?.executeJavaScript """
+          #               node = document.createElement('style');
+          #               node.type='text/css';
+          #               node.innerHTML='#{@model.browserPlus.bpStyle}';
+          #               document.getElementsByTagName('head')[0].appendChild(node);
+          #               """
+          @htmlv[0]?.executeJavaScript BrowserPlusView.loadCSS('bp-style.css')
+          @htmlv[0]?.executeJavaScript BrowserPlusView.loadCSS('jquery.notifyBar.css')
 
       @htmlv[0]?.addEventListener "page-favicon-updated", (e)=>
         _ = require 'lodash'
@@ -216,7 +256,7 @@ class BrowserPlusView extends View
           @refreshPage()
           @liveSubscription = new CompositeDisposable
           @liveSubscription.add atom.workspace.observeTextEditors (editor)=>
-                    @liveSubscription.add editor.onDidSave =>
+                  @liveSubscription.add editor.onDidSave =>
                         timeout = atom.config.get('browser-plus.live')
                         setTimeout =>
                           @refreshPage()
@@ -248,7 +288,7 @@ class BrowserPlusView extends View
         @fav.toggleClass 'active'
 
       @htmlv[0]?.addEventListener 'new-window', (e)->
-        atom.workspace.open e.url, {split: 'left',searchAllPanes:true}
+        atom.workspace.open e.url, {split: 'left',searchAllPanes:true,openInSameWindow:false}
 
       @htmlv[0]?.addEventListener "did-start-loading", =>
         @spinner.removeClass 'fa-custom'
@@ -312,7 +352,7 @@ class BrowserPlusView extends View
         if url
           @model.url = url
           @url.val url
-        if @model.src
+        if @ultraLiveOn and @model.src
           @htmlv[0]?.src = @model.src
         else
           @htmlv[0]?.executeJavaScript "location.href = '#{@model.url}'"
@@ -437,6 +477,25 @@ class BrowserPlusView extends View
     @subscriptions.dispose()
 
   @getJQuery: ->
-    fs = require 'fs'
-    resources = "#{atom.packages.getPackageDirPaths()[0]}/browser-plus/resources/"
-    fs.readFileSync "#{resources}/jquery-2.1.4.min.js",'utf-8'
+    fs.readFileSync "#{@model.browserPlus.resources}/jquery-2.1.4.min.js",'utf-8'
+
+  @getJStorage: ->
+    fs.readFileSync "#{@model.browserPlus.resources}/jstorage.min.js",'utf-8'
+
+  @getNotifyBar: ->
+    fs.readFileSync "#{@model.browserPlus.resources}/jquery.notifyBar.js",'utf-8'
+
+  @getHotKeys: ->
+    fs.readFileSync "#{@model.browserPlus.resources}/jquery.hotkeys.min.js",'utf-8'
+
+  @loadCSS: (filename,fullpath)->
+    filename = "file:///C:/Users/Administrator/.atom/packages/browser-plus/resources/#{filename}" unless fullpath
+    """
+    jQuery('head').append(jQuery('<link type="text/css" rel="stylesheet" href="#{filename}">'))
+    """
+
+  @loadJS: (filename,fullpath=false)->
+    filename = "file:///C:/Users/Administrator/.atom/packages/browser-plus/resources/#{filename}" unless fullpath
+    """
+    jQuery('head').append(jQuery('<script type="text/javascript" src="#{filename}">'))
+    """

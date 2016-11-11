@@ -3,6 +3,7 @@
 BrowserPlusModel = require './browser-plus-model'
 require 'JSON2'
 require 'jstorage'
+uuid = require 'node-uuid'
 module.exports = BrowserPlus =
   browserPlusView: null
   subscriptions: null
@@ -51,7 +52,7 @@ module.exports = BrowserPlus =
                               ///i
          return false unless BrowserPlusModel.checkUrl(url)
          #  check if it need to be open in same window
-         unless url is 'browser-plus://blank'
+         unless url is 'browser-plus://blank' or url.startsWith('file:///') or not opt.openInSameWindow
            editor = BrowserPlusModel.getEditorForURI(url,opt.openInSameWindow)
            if editor
              editor.setText(opt.src)
@@ -109,14 +110,11 @@ module.exports = BrowserPlus =
       if  paneIndex is 0 then 'down' else 'up'
 
   deactivate: ->
-    @browserPlusView.destroy?()
+    @browserPlusView?.destroy?()
     @subscriptions.dispose()
 
   serialize: ->
     noReset: true
-
-  registerEvt: (cb)->
-    debugger
 
   getBrowserPlusUrl: (url)->
     if url.startsWith('browser-plus://history')
@@ -124,8 +122,39 @@ module.exports = BrowserPlus =
     else
       url = ''
 
+  addPlugin: (requires)->
+    @plugins ?= {}
+    for key,val of requires
+      try
+        switch key
+          when 'onInit' or 'onExit'
+            @plugins[key] = (@plugins[key] or []).concat "(#{val.toString()})()"
+          when 'js' or 'css'
+            unless  pkgPath
+              pkgs = Object.keys(atom.packages.activatingPackages).sort()
+              pkg = pkgs[pkgs.length - 1]
+              pkgPath = atom.packages.activatingPackages[pkg].path + "/"
+            if Array.isArray(val)
+              for script in val
+                unless script.startsWith('http')
+                  @plugins[key+"s"] = (@plugins[key] or []).concat 'file:///'+atom.packages.activatingPackages[pkg].path.replace(/\\/g,"/") + "/" + script
+            else
+              unless val.startsWith('http')
+                @plugins[key+"s"] = (@plugins[key] or []).concat 'file:///'+ atom.packages.activatingPackages[pkg].path.replace(/\\/g,"/") + "/" + val
+
+          when 'menus'
+            if Array.isArray(val)
+              for menu in val
+                menu._id = uuid.v1()
+                @plugins[key] = (@plugins[key] or []).concat menu
+            else
+              val._id = uuid.v1()
+              @plugins[key] = (@plugins[key] or []).concat val
+
+      catch error
+
+
+
   provideService: ->
-    BrowserPlusModel = require './browser-plus-model'
-    model:BrowserPlusModel
-    open: @open.bind(@)
-    evt: @registerEvt.bind(@)
+    model:require './browser-plus-model'
+    addPlugin: @addPlugin.bind(@)
