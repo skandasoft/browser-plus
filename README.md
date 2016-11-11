@@ -119,7 +119,7 @@
 
 16. __Is there a way enhance the functionality of BrowserPlus/Plugin system for BrowserPlus?__
 
-    you can build a plugin for browserplus. It is very simple. Checkout browser-plus-zoom or browser-plus-block. The name convention for the plugin is browser-plus-yourpluginname.
+    you can build a plugin for browserplus. It is very simple. Checkout [browser-plus-zoom][5] or [browser-plus-open-new-window][9] or [browser-plus-block][6]. The naming convention for the plugin is browser-plus-yourpluginname.
     browser-plus provides a service called consumeAddPlugin which can be put under your plugin
     ``` javascript
       "consumedServices": {
@@ -130,14 +130,15 @@
         }
       }
     ```
-    in order to add your plugin to browserplus pass the details in json format
-    "onInit" --> initial script that will be loaded once the browser is opened
+    in order to add your plugin to browser-plus pass the details in json format
 
-    "js" --> it is also possible to load a/array of javascripts both from your resources directory under your package/ from cdns
+    "onInit" --> initializes the browser with your script that will be loaded once the browser is opened
 
-    "css" --> it is also possible to load a/array of css both from your resources directory under your package/ from cdns
+    "js" --> load an/array of javascripts both from your resources directory under your package/ from cdns
 
-    "menus" --> this can be a single object /array of object in the following format
+    "css" --> load an/array of css both from your resources directory under your package/ from cdns
+
+    "menus" --> this can be a single object /array of object in the following format. The plugin can be displayed as context menu or accessed using key combinations.
 
     "menu-ctrlkey" --> use to invoke you plugin (it can be any key combination)
 
