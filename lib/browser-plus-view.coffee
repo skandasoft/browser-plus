@@ -206,7 +206,8 @@ class BrowserPlusView extends View
         @model.favIcon = e.favicons[0]
         @model.updateIcon e.favicons[0]
         favIcon = window.$.jStorage.get('bp.favIcon')
-        uri = @htmlv[0].getUrl()
+        uri = @htmlv[0].getUrl?()
+        return unless uri
         favIcon[uri] = e.favicons[0]
         window.$.jStorage.set('bp.favIcon',favIcon)
         @model.updateIcon()
@@ -228,7 +229,8 @@ class BrowserPlusView extends View
         _ = require 'lodash'
         favr = window.$.jStorage.get('bp.fav')
         title = window.$.jStorage.get('bp.title')
-        uri = @htmlv[0].getUrl()
+        uri = @htmlv[0].getUrl?()
+        return unless uri
         title[uri] = e.title
         window.$.jStorage.set('bp.title',title)
         if fav  = _.find( favr,{'url':@model.url} )
@@ -443,7 +445,8 @@ class BrowserPlusView extends View
     @forward.click()
 
   addHistory: ->
-    url = @htmlv[0]?.getUrl().replace(/\\/g,"/")
+    url = @htmlv[0]?.getUrl?().replace(/\\/g,"/")
+    return unless url
     historyURL = "file:///#{@model.browserPlus.resources}history.html".replace(/\\/g,"/")
     return if url.startsWith('browser-plus://') or url.startsWith('data:text/html,') or url.startsWith historyURL
     yyyymmdd = ->
