@@ -28,6 +28,8 @@
 
   >   apm rebuild-module-cache
 
+  >   npm install --> This will install all dependency
+
 2. __How to open browser in atom?__
 
    ctrl+shift+p(cmd+shift+p) Browser Plus: Open. It opens the home page(maintained in the settings) or http://www.google.com.
@@ -153,7 +155,7 @@
     The best way make a plugin is copy the browser-plus-open-new-window/browser-plus-zoom and testing with your code.
 
     And you can do a PR on FAQ for browserplus to update your plugin details :).
-    
+
 17. __what browser-plus plugins are availble?__
 
     Look/search for browser-plus- for plugins. That will be the name convention for browserplus plugins.
