@@ -20,15 +20,15 @@
 
   on your command prompt for atom directory, try uninstalling the package and reinstalling it
 
-  >   npm uninstall browser-plus
+  >   apm uninstall browser-plus
 
-  >   npm install browser-plus
+  >   apm install browser-plus
 
   if there is package dependency issue(jquery.autocomplete.js no found error messages etc) try
 
   >   apm rebuild-module-cache
 
-  >   npm install --> This will install all dependency
+  >   npm install --> in the browser-plus directory. This will install all dependency
 
 2. __How to open browser in atom?__
 
