@@ -28,6 +28,7 @@
 
   >   apm rebuild-module-cache
 
+  >   if still issues with jquery.automcomple. delete the jquery-ui directory under node_modules and
   >   npm install --> in the browser-plus directory. This will install all dependency
 
 2. __How to open browser in atom?__
