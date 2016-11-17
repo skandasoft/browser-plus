@@ -493,13 +493,13 @@ class BrowserPlusView extends View
     fs.readFileSync "#{@model.browserPlus.resources}/jquery.hotkeys.min.js",'utf-8'
 
   @loadCSS: (filename,fullpath)->
-    filename = "file:///C:/Users/Administrator/.atom/packages/browser-plus/resources/#{filename}" unless fullpath
+    filename = "#{@model.browserPlus.resources}/#{filename}" unless fullpath
     """
     jQuery('head').append(jQuery('<link type="text/css" rel="stylesheet" href="#{filename}">'))
     """
 
   @loadJS: (filename,fullpath=false)->
-    filename = "file:///C:/Users/Administrator/.atom/packages/browser-plus/resources/#{filename}" unless fullpath
+    filename = "#{@model.browserPlus.resources}/#{filename}" unless fullpath
     """
     jQuery('head').append(jQuery('<script type="text/javascript" src="#{filename}">'))
     """
