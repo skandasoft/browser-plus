@@ -192,8 +192,8 @@ class BrowserPlusView extends View
           #               node.innerHTML='#{@model.browserPlus.bpStyle}';
           #               document.getElementsByTagName('head')[0].appendChild(node);
           #               """
-          @htmlv[0]?.executeJavaScript BrowserPlusView.loadCSS.call @,'bp-style.css',true
-          @htmlv[0]?.executeJavaScript BrowserPlusView.loadCSS.call @,'jquery.notifyBar.css',true
+          @htmlv[0]?.executeJavaScript BrowserPlusView.loadCSS.call @,'bp-style.css'
+          @htmlv[0]?.executeJavaScript BrowserPlusView.loadCSS.call @,'jquery.notifyBar.css'
 
       @htmlv[0]?.addEventListener "page-favicon-updated", (e)=>
         _ = require 'lodash'
@@ -492,15 +492,19 @@ class BrowserPlusView extends View
   @getHotKeys: ->
     fs.readFileSync "#{@model.browserPlus.resources}/jquery.hotkeys.min.js",'utf-8'
 
-  @loadCSS: (filename,fullpath)->
-    debugger
-    filename = "#{@model.browserPlus.resources}/#{filename}" unless fullpath
+  @loadCSS: (filename,fullpath=false)->
+    unless fullpath
+      fpath = "file:///#{@model.browserPlus.resources.replace(/\\/g,'/')}"
+      filename = "#{fpath}#{filename}"
     """
     jQuery('head').append(jQuery('<link type="text/css" rel="stylesheet" href="#{filename}">'))
     """
 
   @loadJS: (filename,fullpath=false)->
-    filename = "#{@model.browserPlus.resources}/#{filename}" unless fullpath
+    unless fullpath
+      fpath = "file:///#{@model.browserPlus.resources.replace(/\\/g,'/')}"
+      filename = "#{fpath}#{filename}"
+
     """
     jQuery('head').append(jQuery('<script type="text/javascript" src="#{filename}">'))
     """
