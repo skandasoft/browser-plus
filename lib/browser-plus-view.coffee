@@ -174,11 +174,11 @@ class BrowserPlusView extends View
               @htmlv[0]?.executeJavaScript init
           if jss = @model.browserPlus.plugins?.jss
             for js in jss
-              @htmlv[0]?.executeJavaScript BrowserPlusView.loadJS(js,true)
+              @htmlv[0]?.executeJavaScript BrowserPlusView.loadJS.call(@,js,true)
 
           if csss = @model.browserPlus.plugins?.csss
             for css in csss
-              @htmlv[0]?.executeJavaScript BrowserPlusView.loadCSS(css,true)
+              @htmlv[0]?.executeJavaScript BrowserPlusView.loadCSS.call(@,css,true)
 
           if menus = @model.browserPlus.plugins?.menus
             for menu in menus
@@ -192,8 +192,8 @@ class BrowserPlusView extends View
           #               node.innerHTML='#{@model.browserPlus.bpStyle}';
           #               document.getElementsByTagName('head')[0].appendChild(node);
           #               """
-          @htmlv[0]?.executeJavaScript BrowserPlusView.loadCSS('bp-style.css')
-          @htmlv[0]?.executeJavaScript BrowserPlusView.loadCSS('jquery.notifyBar.css')
+          @htmlv[0]?.executeJavaScript BrowserPlusView.loadCSS.call @,'bp-style.css',true
+          @htmlv[0]?.executeJavaScript BrowserPlusView.loadCSS.call @,'jquery.notifyBar.css',true
 
       @htmlv[0]?.addEventListener "page-favicon-updated", (e)=>
         _ = require 'lodash'
@@ -493,6 +493,7 @@ class BrowserPlusView extends View
     fs.readFileSync "#{@model.browserPlus.resources}/jquery.hotkeys.min.js",'utf-8'
 
   @loadCSS: (filename,fullpath)->
+    debugger
     filename = "#{@model.browserPlus.resources}/#{filename}" unless fullpath
     """
     jQuery('head').append(jQuery('<link type="text/css" rel="stylesheet" href="#{filename}">'))
