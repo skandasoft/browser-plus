@@ -99,10 +99,10 @@ class BrowserPlusView extends View
       select = (event,ui)=>
         @goToUrl(ui.item.value)
 
-      jQ(@url).autocomplete
+      jQ(@url).autocomplete?(
           source: src
           minLength: 2
-          select: select
+          select: select)
       @subscriptions.add atom.tooltips.add @back, title: 'Back'
       @subscriptions.add atom.tooltips.add @forward, title: 'Forward'
       @subscriptions.add atom.tooltips.add @refresh, title: 'Refresh'
@@ -375,7 +375,7 @@ class BrowserPlusView extends View
       @model.setTitle(null)
       @model.updateIcon(null)
       if url.startsWith('browser-plus://')
-        url = @model.browserPlus.getBrowserPlusUrl(url)
+        url = @model.browserPlus.getBrowserPlusUrl?(url)
       @htmlv.attr 'src',url
 
   showDevTool: (evt)->
