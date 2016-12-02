@@ -363,7 +363,7 @@ class BrowserPlusView extends View
   goToUrl: (url)->
       BrowserPlusModel = require './browser-plus-model'
       return unless BrowserPlusModel.checkUrl(url)
-      jQ(@url).autocomplete("close")
+      # jQ(@url).autocomplete("close")
       @liveOn = false
       @live.toggleClass 'active',@liveOn
       @liveSubscription?.dispose() unless @liveOn
