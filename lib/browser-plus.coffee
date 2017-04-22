@@ -24,6 +24,10 @@ module.exports = BrowserPlus =
       title: 'Show Current File'
       type: 'boolean'
       default: true
+    openNewTab:
+      title: 'Open browser in a new tab rather than a new pane?'
+      type: 'boolean'
+      default: false
     openInSameWindow:
       title: 'Open URLs in Same Window'
       type: 'array'
@@ -69,6 +73,7 @@ module.exports = BrowserPlus =
 
     # Register command that toggles this view
     @subscriptions.add atom.commands.add 'atom-workspace', 'browser-plus:open': => @open()
+    @subscriptions.add atom.commands.add 'atom-workspace', 'browser-plus:openSameTab': => openSameTab()
     @subscriptions.add atom.commands.add 'atom-workspace', 'browser-plus:openCurrent': => @open(true)
     @subscriptions.add atom.commands.add 'atom-workspace', 'browser-plus:history': => @history(true)
     @subscriptions.add atom.commands.add 'atom-workspace', 'browser-plus:deleteHistory': => @delete(true)
@@ -85,7 +90,11 @@ module.exports = BrowserPlus =
     # file:///#{@resources}history.html
     atom.workspace.open "browser-plus://history" , {split: 'left',searchAllPanes:true}
 
-  open: (url,opt = {})->
+  openSameTab: ->
+    open(true,{}, true)
+
+  open: (url,opt = {},same)->
+    same = same or atom.config.get('browser-plus.openNewTab')
     if url is true or atom.config.get('browser-plus.currentFile')
       editor = atom.workspace.getActiveTextEditor()
       if url = editor?.buffer?.getUri()
@@ -93,11 +102,12 @@ module.exports = BrowserPlus =
     unless url
       url = atom.config.get('browser-plus.homepage')
 
-    opt.split = @getPosition() unless opt.split
+    opt.split = @getPosition(same) unless opt.split
     # url = "browser-plus://preview~#{url}" if src
     atom.workspace.open url, opt
 
-  getPosition: ->
+  getPosition: (same) ->
+    console.log(same)
     activePane = atom.workspace.paneForItem atom.workspace.getActiveTextEditor()
     return unless activePane
     paneAxis = activePane.getParent()
@@ -105,9 +115,15 @@ module.exports = BrowserPlus =
     paneIndex = paneAxis.getPanes().indexOf(activePane)
     orientation = paneAxis.orientation ? 'horizontal'
     if orientation is 'horizontal'
-      if  paneIndex is 0 then 'right' else 'left'
+      if same is true
+        if paneIndex is 0 then 'left' else 'right'
+      else
+        if paneIndex is 0 then 'right' else 'left'
     else
-      if  paneIndex is 0 then 'down' else 'up'
+      if same is true
+        if paneIndex is 0 then 'up' else 'down'
+      else
+        if paneIndex is 0 then 'down' else 'up'
 
   deactivate: ->
     @browserPlusView?.destroy?()
