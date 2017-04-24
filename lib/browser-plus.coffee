@@ -8,6 +8,11 @@ module.exports = BrowserPlus =
   browserPlusView: null
   subscriptions: null
   config:
+    samePane:
+      title: 'Open in same pane?'
+      type: 'boolean'
+      default: false
+      order: 2
     fav:
       title: 'No of Favorites'
       type: 'number'
@@ -24,6 +29,7 @@ module.exports = BrowserPlus =
       title: 'Show Current File'
       type: 'boolean'
       default: true
+      order: 1
     openInSameWindow:
       title: 'Open URLs in Same Window'
       type: 'array'
@@ -87,6 +93,7 @@ module.exports = BrowserPlus =
     atom.workspace.open "browser-plus://history" , {split: 'left',searchAllPanes:true}
 
   open: (url,opt = {},same)->
+    same = same or atom.config.get('browser-plus.samePane')
     if url is true or atom.config.get('browser-plus.currentFile')
       editor = atom.workspace.getActiveTextEditor()
       if url = editor?.buffer?.getUri()
