@@ -50,7 +50,7 @@ class BrowserPlusView extends View
           @span id:'history',class:'mega-octicon octicon-book',outlet: 'history'
           @span id:'fav',class:'mega-octicon octicon-star',outlet: 'fav'
           @span id:'favList', class:'octicon octicon-arrow-down',outlet: 'favList'
-          @span id:'newTab', class:'octicon',outlet: 'newTab', "\u2795"
+          @span id:'newTab', class:'octicon new-tab',outlet: 'newTab', "\u2795"
           @a class:"fa fa-spinner", outlet: 'spinner'
 
         @div class:'nav-btns', =>
