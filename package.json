@@ -14,7 +14,7 @@
     "jquery-ui": "1.10.5",
     "theorist": "~1.0.2",
     "lodash": "~3.10.1",
-    "jStorage": "~0.4.8",
+    "jstorage": "~0.4.8",
     "JSON2": "~0.1.0",
     "cheerio": "~0.20.0",
     "node-uuid": ">=1.4.7"
