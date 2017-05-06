@@ -48,7 +48,7 @@ module.exports = BrowserPlus =
           url.indexOf('browser-plus~') is 0 )
          localhostPattern = ///^
                               (http://)?
-                              localhost
+                              ([a-zA-Z0-9]*)
                               ///i
          return false unless BrowserPlusModel.checkUrl(url)
          #  check if it need to be open in same window
@@ -61,7 +61,7 @@ module.exports = BrowserPlus =
              pane.activateItem(editor)
              return editor
 
-         url = url.replace(localhostPattern,'http://127.0.0.1')
+         #url = url.replace(localhostPattern,'http://127.0.0.1')
          new BrowserPlusModel {browserPlus:@,url:url,opt:opt}
 
     # Events subscribed to in atom's system can be easily cleaned up with a CompositeDisposable
