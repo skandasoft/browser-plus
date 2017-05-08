@@ -50,6 +50,7 @@ class BrowserPlusView extends View
           @span id:'history',class:'mega-octicon octicon-book',outlet: 'history'
           @span id:'fav',class:'mega-octicon octicon-star',outlet: 'fav'
           @span id:'favList', class:'octicon octicon-arrow-down',outlet: 'favList'
+          @span id:'newTab', class: 'mega-octicon octicon-plus',outlet: 'newTab'
           @a class:"fa fa-spinner", outlet: 'spinner'
 
         @div class:'nav-btns', =>
@@ -111,6 +112,7 @@ class BrowserPlusView extends View
       @subscriptions.add atom.tooltips.add @favList, title: 'View Favorites'
       @subscriptions.add atom.tooltips.add @fav, title: 'Favoritize'
       @subscriptions.add atom.tooltips.add @live, title: 'Live'
+      @subscriptions.add atom.tooltips.add @newTab, title: 'New Tab'
       @subscriptions.add atom.tooltips.add @devtool, title: 'Dev Tools-f12'
 
       @subscriptions.add atom.commands.add '.browser-plus webview', 'browser-plus-view:goBack': => @goBack()
@@ -247,6 +249,9 @@ class BrowserPlusView extends View
       @history.on 'click', (evt)=>
         # atom.workspace.open "file:///#{@model.browserPlus.resources}history.html" , {split: 'left',searchAllPanes:true}
         atom.workspace.open "browser-plus://history" , {split: 'left',searchAllPanes:true}
+
+      @newTab.on 'click', (evt)=>
+        atom.commands.dispatch(atom.views.getView(atom.workspace), 'browser-plus:newTab')
 
       # @pdf.on 'click', (evt)=>
       #   @htmlv[0]?.printToPDF {}, (data,err)->
