@@ -50,6 +50,7 @@ class BrowserPlusView extends View
           @span id:'history',class:'mega-octicon octicon-book',outlet: 'history'
           @span id:'fav',class:'mega-octicon octicon-star',outlet: 'fav'
           @span id:'favList', class:'octicon octicon-arrow-down',outlet: 'favList'
+          @span id:'newTab', class:'octicon new-tab',outlet: 'newTab', "\u2795"
           @a class:"fa fa-spinner", outlet: 'spinner'
 
         @div class:'nav-btns', =>
@@ -110,6 +111,7 @@ class BrowserPlusView extends View
       @subscriptions.add atom.tooltips.add @history, title: 'History'
       @subscriptions.add atom.tooltips.add @favList, title: 'View Favorites'
       @subscriptions.add atom.tooltips.add @fav, title: 'Favoritize'
+      @subscriptions.add atom.tooltips.add @newTab, title: 'New Tab'
       @subscriptions.add atom.tooltips.add @live, title: 'Live'
       @subscriptions.add atom.tooltips.add @devtool, title: 'Dev Tools-f12'
 
@@ -311,6 +313,19 @@ class BrowserPlusView extends View
       @forward.on 'click', (evt)=>
         if @htmlv[0]?.canGoForward() and $(` this`).hasClass('active')
           @htmlv[0]?.goForward()
+
+      @newTab.on 'click', (evt)=>
+        url = 'http://google.ca'
+        activePane = atom.workspace.getActivePane()
+        paneAxis = activePane.getParent()
+        paneIndex = paneAxis.getPanes().indexOf(activePane)
+        orientation = paneAxis.orientation ? 'horizontal'
+        pane = '';
+        if orientation is 'horizontal'
+          pane = paneIndex == 0 ? 'left' : 'right'
+        else
+          pane = paneIndex == 0 ? 'up' : 'down'
+        atom.workspace.open url, {split: pane, searchAllPanes:true,openInSameWindow:true}
 
       @url.on 'click',(evt)=>
         @url.select()
