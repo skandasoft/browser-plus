@@ -80,7 +80,7 @@ module.exports = BrowserPlus =
     new favList @ss.get('bp.fav')
 
   delete: ->
-    $.jStorage.set('bp.history',[])
+    @ss.set('bp.history',[])
 
   history: ->
     # file:///#{@resources}history.html
