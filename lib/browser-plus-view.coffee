@@ -5,7 +5,7 @@ $ = jQ = require 'jquery'
 require 'jquery-ui/autocomplete'
 path = require 'path'
 require 'JSON2'
-require 'jstorage'
+
 fs = require 'fs'
 
 RegExp.escape= (s)->
@@ -15,6 +15,7 @@ module.exports =
 class BrowserPlusView extends View
   constructor: (@model)->
     @subscriptions = new CompositeDisposable
+    @ss = require('simplestorage.js')
     @model.view = @
     @model.onDidDestroy =>
       @subscriptions.dispose()
@@ -28,6 +29,7 @@ class BrowserPlusView extends View
 
   @content: (params)->
     url  = params.url
+    spinnerClass = "fa fa-spinner"
     hideURLBar = ''
     if params.opt?.hideURLBar
       hideURLBar = 'hideURLBar'
@@ -40,6 +42,7 @@ class BrowserPlusView extends View
       url = params.src unless url
     if params.url?.startsWith "browser-plus://"
       url = params.browserPlus?.getBrowserPlusUrl?(url)
+      spinnerClass += " fa-custom"
 
     @div class:'browser-plus', =>
       @div class:"url native-key-bindings #{hideURLBar}",outlet:'urlbar', =>
@@ -50,11 +53,12 @@ class BrowserPlusView extends View
           @span id:'history',class:'mega-octicon octicon-book',outlet: 'history'
           @span id:'fav',class:'mega-octicon octicon-star',outlet: 'fav'
           @span id:'favList', class:'octicon octicon-arrow-down',outlet: 'favList'
-          @a class:"fa fa-spinner", outlet: 'spinner'
+          @a class:spinnerClass, outlet: 'spinner'
 
         @div class:'nav-btns', =>
           @div class: 'nav-btns-right', =>
             # @span id:'pdf',class:'mega-octicon octicon-file-pdf',outlet: 'pdf'
+            @span id:'newTab', class:'octicon',outlet: 'newTab', "\u2795"
             @span id:'print',class:'icon-browser-pluss icon-print',outlet: 'print'
             @span id:'live',class:'mega-octicon octicon-zap',outlet:'live'
             @span id:'devtool',class:'mega-octicon octicon-tools',outlet:'devtool'
@@ -76,7 +80,7 @@ class BrowserPlusView extends View
                     #{RegExp.escape req.term}
                   ///i
 
-        fav = _.filter window.$.jStorage.get('bp.fav'),(fav)->
+        fav = _.filter @ss.get('bp.fav'),(fav)->
                       return fav.url.match(pattern) or fav.title.match(pattern)
         urls = _.pluck(fav,"url")
 
@@ -111,6 +115,7 @@ class BrowserPlusView extends View
       @subscriptions.add atom.tooltips.add @favList, title: 'View Favorites'
       @subscriptions.add atom.tooltips.add @fav, title: 'Favoritize'
       @subscriptions.add atom.tooltips.add @live, title: 'Live'
+      @subscriptions.add atom.tooltips.add @newTab, title: 'New Tab'
       @subscriptions.add atom.tooltips.add @devtool, title: 'Dev Tools-f12'
 
       @subscriptions.add atom.commands.add '.browser-plus webview', 'browser-plus-view:goBack': => @goBack()
@@ -197,19 +202,19 @@ class BrowserPlusView extends View
 
       @htmlv[0]?.addEventListener "page-favicon-updated", (e)=>
         _ = require 'lodash'
-        favr = window.$.jStorage.get('bp.fav')
+        favr = @ss.get('bp.fav')
         if fav = _.find( favr,{'url':@model.url} )
           fav.favIcon = e.favicons[0]
-          window.$.jStorage.set('bp.fav',favr)
+          @ss.set('bp.fav',favr)
 
         @model.iconName = Math.floor(Math.random()*10000).toString()
         @model.favIcon = e.favicons[0]
         @model.updateIcon e.favicons[0]
-        favIcon = window.$.jStorage.get('bp.favIcon')
+        favIcon = @ss.get('bp.favIcon')
         uri = @htmlv[0].getURL()
         return unless uri
         favIcon[uri] = e.favicons[0]
-        window.$.jStorage.set('bp.favIcon',favIcon)
+        @ss.set('bp.favIcon',favIcon)
         @model.updateIcon()
         style = document.createElement('style')
         style.type = 'text/css'
@@ -227,15 +232,15 @@ class BrowserPlusView extends View
       @htmlv[0]?.addEventListener "page-title-set", (e)=>
         # @model.browserPlus.title[@model.url] = e.title
         _ = require 'lodash'
-        favr = window.$.jStorage.get('bp.fav')
-        title = window.$.jStorage.get('bp.title')
+        favr = @ss.get('bp.fav')
+        title = @ss.get('bp.title')
         uri = @htmlv[0].getURL()
         return unless uri
         title[uri] = e.title
-        window.$.jStorage.set('bp.title',title)
+        @ss.set('bp.title',title)
         if fav  = _.find( favr,{'url':@model.url} )
           fav.title = e.title
-          window.$.jStorage.set('bp.fav',favr)
+          @ss.set('bp.fav',favr)
         @model.setTitle(e.title)
 
       @devtool.on 'click', (evt)=>
@@ -243,6 +248,10 @@ class BrowserPlusView extends View
 
       @print.on 'click', (evt)=>
         @htmlv[0]?.print()
+
+      @newTab.on 'click', (evt)=>
+        atom.workspace.open "browser-plus://blank"
+        @spinner.removeClass 'fa-custom'
 
       @history.on 'click', (evt)=>
         # atom.workspace.open "file:///#{@model.browserPlus.resources}history.html" , {split: 'left',searchAllPanes:true}
@@ -274,7 +283,7 @@ class BrowserPlusView extends View
         # return if @model.src
         # return if @htmlv[0]?.getUrl().startsWith('data:text/html,')
         # return if @model.url.startsWith 'browser-plus:'
-        favs = window.$.jStorage.get('bp.fav')
+        favs = @ss.get('bp.fav')
         if @fav.hasClass('active')
           @removeFav(@model)
         else
@@ -287,7 +296,7 @@ class BrowserPlusView extends View
           favs.push data
           delCount = favs.length - atom.config.get 'browser-plus.fav'
           favs.splice 0, delCount if delCount > 0
-          window.$.jStorage.set('bp.fav',favs)
+          @ss.set('bp.fav',favs)
         @fav.toggleClass 'active'
 
       @htmlv[0]?.addEventListener 'new-window', (e)->
@@ -306,7 +315,7 @@ class BrowserPlusView extends View
 
       @favList.on 'click', (evt)=>
         favList = require './fav-view'
-        new favList window.$.jStorage.get('bp.fav')
+        new favList @ss.get('bp.fav')
 
       @forward.on 'click', (evt)=>
         if @htmlv[0]?.canGoForward() and $(` this`).hasClass('active')
@@ -337,8 +346,6 @@ class BrowserPlusView extends View
                     url = url.replace(/\\/g,"/")
                   else
                     url = URL.format(urls)
-                else if url.indexOf('localhost') isnt  -1
-                  url = url.replace(localhostPattern,'http://127.0.0.1')
                 else
                   urls.protocol = 'http'
                   url = URL.format(urls)
@@ -383,11 +390,11 @@ class BrowserPlusView extends View
 
 
   removeFav: (favorite)->
-    favrs = window.$.jStorage.get('bp.fav')
+    favrs = @ss.get('bp.fav')
     for favr,idx in favrs
       if favr.url is favorite.url
         favrs.splice idx,1
-        window.$.jStorage.set('bp.fav',favrs)
+        @ss.set('bp.fav',favrs)
         return
 
   setSrc: (text)->
@@ -414,7 +421,7 @@ class BrowserPlusView extends View
 
   checkFav: ->
     @fav.removeClass 'active'
-    favrs = window.$.jStorage.get('bp.fav')
+    favrs = @ss.get('bp.fav')
     for favr in favrs
       if favr.url is @model.url
         @fav.addClass 'active'
@@ -457,7 +464,7 @@ class BrowserPlusView extends View
       dd = date.getDate().toString()
       yyyy + (if mm[1] then mm else '0' + mm[0]) + (if dd[1] then dd else '0' + dd[0])
     today = yyyymmdd()
-    history = window.$.jStorage.get('bp.history') or []
+    history = @ss.get('bp.history') or []
     # return unless history or history.length = 0
     todayObj = history.find (ele,idx,arr)->
       return true if ele[today]
@@ -469,7 +476,7 @@ class BrowserPlusView extends View
     else
       histToday = todayObj[today]
     histToday.unshift date: (new Date().toString()),uri: url
-    window.$.jStorage.set('bp.history',history)
+    @ss.set('bp.history',history)
 
   getTitle: ->
     @model.getTitle()

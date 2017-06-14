@@ -2,7 +2,7 @@
 {CompositeDisposable} = require 'atom'
 BrowserPlusModel = require './browser-plus-model'
 require 'JSON2'
-require 'jstorage'
+
 uuid = require 'node-uuid'
 module.exports = BrowserPlus =
   browserPlusView: null
@@ -35,10 +35,11 @@ module.exports = BrowserPlus =
       state.title = {}
       state.fav = []
     @resources = "#{atom.packages.getPackageDirPaths()[0]}/browser-plus/resources/"
-    window.$.jStorage.set('bp.fav',[]) unless window.$.jStorage.get('bp.fav')
-    window.$.jStorage.set('bp.history',[])  unless window.$.jStorage.get('bp.history')
-    window.$.jStorage.set('bp.favIcon',{})  unless window.$.jStorage.get('bp.favIcon')
-    window.$.jStorage.set('bp.title',{})  unless window.$.jStorage.get('bp.title')
+    @ss = require 'simplestorage.js'
+    @ss.set('bp.fav',[]) unless @ss.get('bp.fav')
+    @ss.set('bp.history',[])  unless @ss.get('bp.history')
+    @ss.set('bp.favIcon',{})  unless @ss.get('bp.favIcon')
+    @ss.set('bp.title',{})  unless @ss.get('bp.title')
 
     atom.workspace.addOpener (url,opt={})=>
       path = require 'path'
@@ -61,7 +62,7 @@ module.exports = BrowserPlus =
              pane.activateItem(editor)
              return editor
 
-         url = url.replace(localhostPattern,'http://127.0.0.1')
+        #  url = url.replace(localhostPattern,'http://127.0.0.1')
          new BrowserPlusModel {browserPlus:@,url:url,opt:opt}
 
     # Events subscribed to in atom's system can be easily cleaned up with a CompositeDisposable
@@ -76,7 +77,7 @@ module.exports = BrowserPlus =
 
   favr: ->
     favList = require './fav-view'
-    new favList window.$.jStorage.get('bp.fav')
+    new favList @ss.get('bp.fav')
 
   delete: ->
     $.jStorage.set('bp.history',[])
@@ -86,7 +87,7 @@ module.exports = BrowserPlus =
     atom.workspace.open "browser-plus://history" , {split: 'left',searchAllPanes:true}
 
   open: (url,opt = {})->
-    if url is true or atom.config.get('browser-plus.currentFile')
+    if ( not url and atom.config.get('browser-plus.currentFile'))
       editor = atom.workspace.getActiveTextEditor()
       if url = editor?.buffer?.getUri()
         url = "file:///"+url
