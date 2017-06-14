@@ -202,19 +202,20 @@ class BrowserPlusView extends View
 
       @htmlv[0]?.addEventListener "page-favicon-updated", (e)=>
         _ = require 'lodash'
-        favr = @ss.get('bp.fav')
+        require 'jstorage'
+        favr = window.$.jStorage.get('bp.fav')
         if fav = _.find( favr,{'url':@model.url} )
           fav.favIcon = e.favicons[0]
-          @ss.set('bp.fav',favr)
+          window.$.jStorage.set('bp.fav',favr)
 
         @model.iconName = Math.floor(Math.random()*10000).toString()
         @model.favIcon = e.favicons[0]
         @model.updateIcon e.favicons[0]
-        favIcon = @ss.get('bp.favIcon')
+        favIcon = window.$.jStorage.get('bp.favIcon')
         uri = @htmlv[0].getURL()
         return unless uri
         favIcon[uri] = e.favicons[0]
-        @ss.set('bp.favIcon',favIcon)
+        window.$.jStorage.set('bp.favIcon',favIcon)
         @model.updateIcon()
         style = document.createElement('style')
         style.type = 'text/css'
@@ -232,15 +233,16 @@ class BrowserPlusView extends View
       @htmlv[0]?.addEventListener "page-title-set", (e)=>
         # @model.browserPlus.title[@model.url] = e.title
         _ = require 'lodash'
-        favr = @ss.get('bp.fav')
-        title = @ss.get('bp.title')
+        require 'jstorage'
+        favr = window.$.jStorage.get('bp.fav')
+        title = window.$.jStorage.get('bp.title')
         uri = @htmlv[0].getURL()
         return unless uri
         title[uri] = e.title
-        @ss.set('bp.title',title)
+        window.$.jStorage.set('bp.title',title)
         if fav  = _.find( favr,{'url':@model.url} )
           fav.title = e.title
-          @ss.set('bp.fav',favr)
+          window.$.jStorage.set('bp.fav',favr)
         @model.setTitle(e.title)
 
       @devtool.on 'click', (evt)=>
@@ -464,7 +466,8 @@ class BrowserPlusView extends View
       dd = date.getDate().toString()
       yyyy + (if mm[1] then mm else '0' + mm[0]) + (if dd[1] then dd else '0' + dd[0])
     today = yyyymmdd()
-    history = @ss.get('bp.history') or []
+    require 'jstorage'
+    history = window.$.jStorage.get('bp.history') or []
     # return unless history or history.length = 0
     todayObj = history.find (ele,idx,arr)->
       return true if ele[today]
@@ -476,7 +479,8 @@ class BrowserPlusView extends View
     else
       histToday = todayObj[today]
     histToday.unshift date: (new Date().toString()),uri: url
-    @ss.set('bp.history',history)
+    # @ss.set('bp.history',history)
+    window.$.jStorage.set('bp.history',history)
 
   getTitle: ->
     @model.getTitle()
