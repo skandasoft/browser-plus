@@ -3,7 +3,6 @@
 $ = require 'jquery'
 class FavView extends SelectListView
   initialize: (@items)->
-    @ss = require('simplestorage.js')
     super
     @addClass 'overlay from-top'
     @setItems @items
@@ -13,7 +12,8 @@ class FavView extends SelectListView
 
   viewForItem: (item)->
       unless item.favIcon
-        item.favIcon = @ss.get('bp.favIcon')?[item.url]
+        require 'jstorage'
+        item.favIcon = window.bp.js.get('bp.favIcon')?[item.url]
       "<li><img src='#{item.favIcon}'width='20' height='20' >&nbsp; &nbsp; #{item.title?[0..30]}</li>"
 
   confirmed: (item)->

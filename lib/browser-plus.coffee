@@ -35,11 +35,14 @@ module.exports = BrowserPlus =
       state.title = {}
       state.fav = []
     @resources = "#{atom.packages.getPackageDirPaths()[0]}/browser-plus/resources/"
-    @ss = require 'simplestorage.js'
-    @ss.set('bp.fav',[]) unless @ss.get('bp.fav')
-    @ss.set('bp.history',[])  unless @ss.get('bp.history')
-    @ss.set('bp.favIcon',{})  unless @ss.get('bp.favIcon')
-    @ss.set('bp.title',{})  unless @ss.get('bp.title')
+    require 'jstorage'
+    window.bp = {}
+    $ = require('jquery')
+    window.bp.js  = $.extend({},window.$.jStorage)
+    window.bp.js.set('bp.fav',[]) unless window.bp.js.get('bp.fav')
+    window.bp.js.set('bp.history',[])  unless window.bp.js.get('bp.history')
+    window.bp.js.set('bp.favIcon',{})  unless window.bp.js.get('bp.favIcon')
+    window.bp.js.set('bp.title',{})  unless window.bp.js.get('bp.title')
 
     atom.workspace.addOpener (url,opt={})=>
       path = require 'path'
@@ -77,10 +80,10 @@ module.exports = BrowserPlus =
 
   favr: ->
     favList = require './fav-view'
-    new favList @ss.get('bp.fav')
+    new favList window.bp.js.get('bp.fav')
 
   delete: ->
-    @ss.set('bp.history',[])
+    window.bp.js.set('bp.history',[])
 
   history: ->
     # file:///#{@resources}history.html

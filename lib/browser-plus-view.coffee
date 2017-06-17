@@ -15,7 +15,6 @@ module.exports =
 class BrowserPlusView extends View
   constructor: (@model)->
     @subscriptions = new CompositeDisposable
-    @ss = require('simplestorage.js')
     @model.view = @
     @model.onDidDestroy =>
       @subscriptions.dispose()
@@ -79,8 +78,8 @@ class BrowserPlusView extends View
         pattern = ///
                     #{RegExp.escape req.term}
                   ///i
-
-        fav = _.filter @ss.get('bp.fav'),(fav)->
+        require 'jstorage'
+        fav = _.filter window.bp.js.get('bp.fav'),(fav)->
                       return fav.url.match(pattern) or fav.title.match(pattern)
         urls = _.pluck(fav,"url")
 
@@ -203,19 +202,19 @@ class BrowserPlusView extends View
       @htmlv[0]?.addEventListener "page-favicon-updated", (e)=>
         _ = require 'lodash'
         require 'jstorage'
-        favr = window.$.jStorage.get('bp.fav')
+        favr = window.bp.js.get('bp.fav')
         if fav = _.find( favr,{'url':@model.url} )
           fav.favIcon = e.favicons[0]
-          window.$.jStorage.set('bp.fav',favr)
+          window.bp.js.set('bp.fav',favr)
 
         @model.iconName = Math.floor(Math.random()*10000).toString()
         @model.favIcon = e.favicons[0]
         @model.updateIcon e.favicons[0]
-        favIcon = window.$.jStorage.get('bp.favIcon')
+        favIcon = window.bp.js.get('bp.favIcon')
         uri = @htmlv[0].getURL()
         return unless uri
         favIcon[uri] = e.favicons[0]
-        window.$.jStorage.set('bp.favIcon',favIcon)
+        window.bp.js.set('bp.favIcon',favIcon)
         @model.updateIcon()
         style = document.createElement('style')
         style.type = 'text/css'
@@ -234,15 +233,15 @@ class BrowserPlusView extends View
         # @model.browserPlus.title[@model.url] = e.title
         _ = require 'lodash'
         require 'jstorage'
-        favr = window.$.jStorage.get('bp.fav')
-        title = window.$.jStorage.get('bp.title')
+        favr = window.bp.js.get('bp.fav')
+        title = window.bp.js.get('bp.title')
         uri = @htmlv[0].getURL()
         return unless uri
         title[uri] = e.title
-        window.$.jStorage.set('bp.title',title)
+        window.bp.js.set('bp.title',title)
         if fav  = _.find( favr,{'url':@model.url} )
           fav.title = e.title
-          window.$.jStorage.set('bp.fav',favr)
+          window.bp.js.set('bp.fav',favr)
         @model.setTitle(e.title)
 
       @devtool.on 'click', (evt)=>
@@ -285,7 +284,8 @@ class BrowserPlusView extends View
         # return if @model.src
         # return if @htmlv[0]?.getUrl().startsWith('data:text/html,')
         # return if @model.url.startsWith 'browser-plus:'
-        favs = @ss.get('bp.fav')
+        require 'jstorage'
+        favs = window.bp.js.get('bp.fav')
         if @fav.hasClass('active')
           @removeFav(@model)
         else
@@ -298,7 +298,7 @@ class BrowserPlusView extends View
           favs.push data
           delCount = favs.length - atom.config.get 'browser-plus.fav'
           favs.splice 0, delCount if delCount > 0
-          @ss.set('bp.fav',favs)
+          window.bp.js.set('bp.fav',favs)
         @fav.toggleClass 'active'
 
       @htmlv[0]?.addEventListener 'new-window', (e)->
@@ -317,7 +317,8 @@ class BrowserPlusView extends View
 
       @favList.on 'click', (evt)=>
         favList = require './fav-view'
-        new favList @ss.get('bp.fav')
+        require 'jstorage'
+        new favList window.bp.js.get('bp.fav')
 
       @forward.on 'click', (evt)=>
         if @htmlv[0]?.canGoForward() and $(` this`).hasClass('active')
@@ -392,11 +393,12 @@ class BrowserPlusView extends View
 
 
   removeFav: (favorite)->
-    favrs = @ss.get('bp.fav')
+    require 'jstorage'
+    favrs = window.bp.js.get('bp.fav')
     for favr,idx in favrs
       if favr.url is favorite.url
         favrs.splice idx,1
-        @ss.set('bp.fav',favrs)
+        window.bp.js.set('bp.fav',favrs)
         return
 
   setSrc: (text)->
@@ -423,7 +425,8 @@ class BrowserPlusView extends View
 
   checkFav: ->
     @fav.removeClass 'active'
-    favrs = @ss.get('bp.fav')
+    require 'jstorage'
+    favrs = window.bp.js.get('bp.fav')
     for favr in favrs
       if favr.url is @model.url
         @fav.addClass 'active'
@@ -467,7 +470,7 @@ class BrowserPlusView extends View
       yyyy + (if mm[1] then mm else '0' + mm[0]) + (if dd[1] then dd else '0' + dd[0])
     today = yyyymmdd()
     require 'jstorage'
-    history = window.$.jStorage.get('bp.history') or []
+    history = window.bp.js.get('bp.history') or []
     # return unless history or history.length = 0
     todayObj = history.find (ele,idx,arr)->
       return true if ele[today]
@@ -480,7 +483,7 @@ class BrowserPlusView extends View
       histToday = todayObj[today]
     histToday.unshift date: (new Date().toString()),uri: url
     # @ss.set('bp.history',history)
-    window.$.jStorage.set('bp.history',history)
+    window.bp.js.set('bp.history',history)
 
   getTitle: ->
     @model.getTitle()
