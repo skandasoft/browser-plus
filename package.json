@@ -1,7 +1,7 @@
 {
   "name": "browser-plus",
   "main": "./lib/browser-plus",
-  "version": "0.0.91",
+  "version": "0.0.92",
   "description": "Browser Plus - Real Browser in Atom",
   "repository": "https://github.com/skandasoft/browser-plus",
   "license": "MIT",
