@@ -2,9 +2,6 @@
 (function() {
   document.addEventListener('DOMContentLoaded', function() {
     window.browserPlus = {};
-    window.onhashchange = function(evt) {
-      return console.log('~browser-plus-hrefchange~' + evt.newURL);
-    };
     browserPlus.menu = function(menu) {
       var submenu;
       if (!browserPlus.contextMenu) {
@@ -89,11 +86,6 @@
         jQuery('body').on(menu.keytype, menu.selector, menu.ctrlkey, eval('(' + menu.fn + ')'));
       }
     };
-    if (location.href.startsWith('data:text/html,')) {
-
-    } else {
-      console.log('~browser-plus-href~' + location.href + ' ' + document.title);
-    }
     if (typeof jQuery === 'undefined') {
       return console.log('~browser-plus-jquery~');
     } else {

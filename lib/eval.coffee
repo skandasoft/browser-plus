@@ -1,6 +1,6 @@
 (->
 	RegExp.escape= (s)->
-	  s.replace /[-\/\\^$*+?.()|[\]{}]/g, '\\$&'
+		s.replace /[-\/\\^$*+?.()|[\]{}]/g, '\\$&'
 	vm = undefined
 	__slice_ = [].slice
 	vm = require("vm")

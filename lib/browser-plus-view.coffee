@@ -21,7 +21,7 @@ class BrowserPlusView extends View
     @model.view = @
     @model.onDidDestroy =>
       @subscriptions.dispose()
-      jQ(@url).autocomplete('destroy')
+      jQ(@url).autocomplete?('destroy')
     atom.notifications.onDidAddNotification (notification) ->
       if notification.type == 'info'
         setTimeout () ->
@@ -62,6 +62,7 @@ class BrowserPlusView extends View
             # @span id:'pdf',class:'mega-octicon octicon-file-pdf',outlet: 'pdf'
             @span id:'newTab', class:'octicon',outlet: 'newTab', "\u2795"
             @span id:'print',class:'icon-browser-pluss icon-print',outlet: 'print'
+            @span id:'live',class:'mega-octicon octicon-pin',outlet:'remember'
             @span id:'live',class:'mega-octicon octicon-zap',outlet:'live'
             @span id:'devtool',class:'mega-octicon octicon-tools',outlet:'devtool'
 
@@ -110,12 +111,13 @@ class BrowserPlusView extends View
           select: select)
       @subscriptions.add atom.tooltips.add @back, title: 'Back'
       @subscriptions.add atom.tooltips.add @forward, title: 'Forward'
-      @subscriptions.add atom.tooltips.add @refresh, title: 'Refresh'
+      @subscriptions.add atom.tooltips.add @refresh, title: 'Refresh-f5/ctrl-f5'
       @subscriptions.add atom.tooltips.add @print, title: 'Print'
       @subscriptions.add atom.tooltips.add @history, title: 'History'
       @subscriptions.add atom.tooltips.add @favList, title: 'View Favorites'
       @subscriptions.add atom.tooltips.add @fav, title: 'Favoritize'
       @subscriptions.add atom.tooltips.add @live, title: 'Live'
+      @subscriptions.add atom.tooltips.add @remember, title: 'Remember Position'
       @subscriptions.add atom.tooltips.add @newTab, title: 'New Tab'
       @subscriptions.add atom.tooltips.add @devtool, title: 'Dev Tools-f12'
 
@@ -124,7 +126,7 @@ class BrowserPlusView extends View
       @subscriptions.add atom.commands.add '.browser-plus', 'browser-plus-view:toggleURLBar': => @toggleURLBar()
 
       @liveOn = false
-      @element.onkeydown = =>@showDevTool(arguments)
+      @element.onkeydown = =>@keyHandler(arguments)
       @checkFav() if @model.url.indexOf('file:///') >= 0
       # Array.observe @model.browserPlus.fav, (ele)=>
       #   @checkFav()
@@ -133,44 +135,68 @@ class BrowserPlusView extends View
         e.request.allow()
 
       @htmlv[0]?.addEventListener "console-message", (e)=>
-        if e.message.includes('~browser-plus-href~')
-          data = e.message.replace('~browser-plus-href~','')
-          indx = data.indexOf(' ')
-          url = data.substr(0,indx)
-          title = data.substr(indx + 1)
-          BrowserPlusModel = require './browser-plus-model'
-          unless BrowserPlusModel.checkUrl(url)
-            url = atom.config.get('browser-plus.homepage') or "http://www.google.com"
-            atom.notifications.addSuccess("Redirecting to #{url}")
-            @htmlv[0]?.executeJavaScript "location.href = '#{url}'"
-            return
-          if url and url isnt @model.url and not @url.val()?.startsWith 'browser-plus://'
-            @url.val url
-            @model.url = url
-          if title
-            # @model.browserPlus.title[@model.url] = title
-            @model.setTitle(title) if title isnt @model.getTitle()
-          else
-            # @model.browserPlus.title[@model.url] = url
-            @model.setTitle(url)
+        # if e.message.includes('~browser-plus-href~')
+        #   data = e.message.replace('~browser-plus-href~','')
+        #   indx = data.indexOf(' ')
+        #   url = data.substr(0,indx)
+        #   title = data.substr(indx + 1)
+        #   BrowserPlusModel = require './browser-plus-model'
+        #   unless BrowserPlusModel.checkUrl(url)
+        #     url = atom.config.get('browser-plus.homepage') or "http://www.google.com"
+        #     atom.notifications.addSuccess("Redirecting to #{url}")
+        #     @htmlv[0]?.executeJavaScript "location.href = '#{url}'"
+        #     return
+        #   if url and url isnt @model.url and not @url.val()?.startsWith 'browser-plus://'
+        #     @url.val url
+        #     @model.url = url
+        #   if title
+        #     # @model.browserPlus.title[@model.url] = title
+        #     @model.setTitle(title) if title isnt @model.getTitle()
+        #   else
+        #     # @model.browserPlus.title[@model.url] = url
+        #     @model.setTitle(url)
+        #
+        #   @live.toggleClass 'active',@liveOn
+        #   @liveSubscription?.dispose() unless @liveOn
+        #   @checkNav()
+        #   @checkFav()
+        #   @addHistory()
 
-          @live.toggleClass 'active',@liveOn
-          @liveSubscription?.dispose() unless @liveOn
-          @checkNav()
-          @checkFav()
-          @addHistory()
-
-        if e.message.includes('~browser-plus-hrefchange~')
-          url = e.message.replace('~browser-plus-hrefchange~','')
-          if url and url isnt @model.url and not @url.val()?.startsWith 'browser-plus://'
-            @url.val url
-            @model.url = url
-            @addHistory()
+        # if e.message.includes('~browser-plus-hrefchange~')
+        #   url = e.message.replace('~browser-plus-hrefchange~','')
+        #   if url and url isnt @model.url and not @url.val()?.startsWith 'browser-plus://'
+        #     @url.val url
+        #     @model.url = url
+        #     @addHistory()
+        if e.message.includes('~browser-plus-position~') and @rememberOn
+          data = e.message.replace('~browser-plus-position~','')
+          indx = data.indexOf(',')
+          top = data.substr(0,indx)
+          left = data.substr(indx + 1)
+          @curPos = {"top":top,"left":left}
+          @href = @url.val()
 
         if e.message.includes('~browser-plus-jquery~') or e.message.includes('~browser-plus-menu~')
           if e.message.includes('~browser-plus-jquery~')
             @model.browserPlus.jQueryJS ?= BrowserPlusView.getJQuery.call @
             @htmlv[0]?.executeJavaScript @model.browserPlus.jQueryJS
+
+          if @rememberOn
+            if @model.hashurl
+              @model.url = @model.hashurl
+              @model.hashurl = undefined
+              @url.val(@model.url)
+              @htmlv[0]?.executeJavaScript """
+                  location.href = '#{@model.url}'
+                  """
+            if @rememberOn and @model.url is @href
+              @htmlv[0]?.executeJavaScript """
+                jQuery(window).scrollTop(#{@curPos.top});
+                jQuery(window).scrollLeft(#{@curPos.left});
+              """
+
+          # @model.browserPlus.evalJS ?= BrowserPlusView.getEval.call @
+          # @htmlv[0]?.executeJavaScript @model.browserPlus.evalJS
 
           @model.browserPlus.jStorageJS ?= BrowserPlusView.getJStorage.call @
           @htmlv[0]?.executeJavaScript @model.browserPlus.jStorageJS
@@ -183,7 +209,6 @@ class BrowserPlusView extends View
 
           @model.browserPlus.notifyBar ?= BrowserPlusView.getNotifyBar.call @
           @htmlv[0]?.executeJavaScript @model.browserPlus.notifyBar
-
           if inits = @model.browserPlus.plugins?.onInit
             for init in inits
               # init = "(#{init.toString()})()"
@@ -240,6 +265,12 @@ class BrowserPlusView extends View
           """
         document.getElementsByTagName('head')[0].appendChild(style)
 
+      @htmlv[0]?.addEventListener "did-navigate-in-page", (evt)=>
+        @updatePageUrl(evt);
+
+      @htmlv[0]?.addEventListener "did-navigate", (evt)=>
+        @updatePageUrl(evt);
+
       @htmlv[0]?.addEventListener "page-title-set", (e)=>
         # @model.browserPlus.title[@model.url] = e.title
         _ = require 'lodash'
@@ -257,6 +288,22 @@ class BrowserPlusView extends View
       @devtool.on 'click', (evt)=>
         @toggleDevTool()
 
+      @remember.on 'click', (evt)=>
+        @rememberOn = !@rememberOn
+        @remember.toggleClass('active',@rememberOn)
+        # if @rememberOn
+        #     @htmlv[0]?.executeJavaScript """
+        #         jQuery(window).on('beforeunload', function() {
+        #           var left, top;
+        #           top = jQuery(window).scrollTop();
+        #           left = jQuery(window).scrollLeft();
+        #           return console.log(`~browser-plus-position~${top},${left}`);
+        #         });
+        #       """
+        # else
+        #   @htmlv[0]?.executeJavaScript """
+        #     jQuery(window).off('beforeunload')
+        #     """
       @print.on 'click', (evt)=>
         @htmlv[0]?.print()
 
@@ -294,7 +341,6 @@ class BrowserPlusView extends View
         # return if @model.src
         # return if @htmlv[0]?.getUrl().startsWith('data:text/html,')
         # return if @model.url.startsWith 'browser-plus:'
-        require 'jstorage'
         favs = window.bp.js.get('bp.fav')
         if @fav.hasClass('active')
           @removeFav(@model)
@@ -366,8 +412,41 @@ class BrowserPlusView extends View
       @refresh.on 'click', (evt)=>
         @refreshPage()
 
-  refreshPage: (url)->
+
+  updatePageUrl: (evt) ->
+      BrowserPlusModel = require './browser-plus-model'
+      url = evt.url
+      unless BrowserPlusModel.checkUrl(url)
+        url = atom.config.get('browser-plus.homepage') or "http://www.google.com"
+        atom.notifications.addSuccess("Redirecting to #{url}")
+        @htmlv[0]?.executeJavaScript "location.href = '#{url}'"
+        return
+      if url and url isnt @model.url and not @url.val()?.startsWith 'browser-plus://'
+        @url.val url
+        @model.url = url
+      title = @htmlv[0]?.getTitle()
+      if title
+        # @model.browserPlus.title[@model.url] = title
+        @model.setTitle(title) if title isnt @model.getTitle()
+      else
+        # @model.browserPlus.title[@model.url] = url
+        @model.setTitle(url)
+
+      @live.toggleClass 'active',@liveOn
+      @liveSubscription?.dispose() unless @liveOn
+      @checkNav()
+      @checkFav()
+      @addHistory()
+
+  refreshPage: (url,ignorecache)->
       # htmlv = @model.view.htmlv[0]
+      if @rememberOn
+        @htmlv[0]?.executeJavaScript """
+          var left, top;
+          curTop = jQuery(window).scrollTop();
+          curLeft = jQuery(window).scrollLeft();
+          console.log(`~browser-plus-position~${curTop},${curLeft}`);
+        """
       if @model.orgURI and pp = atom.packages.getActivePackage('pp')
         pp.mainModule.compilePath(@model.orgURI,@model._id)
       else
@@ -377,12 +456,25 @@ class BrowserPlusView extends View
         if @ultraLiveOn and @model.src
           @htmlv[0]?.src = @model.src
         else
-          @htmlv[0]?.executeJavaScript "location.href = '#{@model.url}'"
+          # if @model.url.indexOf('#')
+          #   @model.hashurl = @model.url
+          #   indx = @model.url.indexOf('#')
+          #   baseurl = @model.url.substr(0,indx)
+          #   @htmlv[0]?.executeJavaScript """
+          #     location.href = '#{baseurl}'
+          #   """
+          # else
+          #   @model.hashurl = undefined
+          # @htmlv[0]?.executeJavaScript "location.href = '#{@model.url}'"
+          if ignorecache
+            @htmlv[0]?.reloadIgnoringCache()
+          else
+            @htmlv[0]?.reload()
 
   goToUrl: (url)->
       BrowserPlusModel = require './browser-plus-model'
       return unless BrowserPlusModel.checkUrl(url)
-      jQ(@url).autocomplete("close")
+      jQ(@url).autocomplete?("close")
       @liveOn = false
       @live.toggleClass 'active',@liveOn
       @liveSubscription?.dispose() unless @liveOn
@@ -397,9 +489,15 @@ class BrowserPlusView extends View
         url = @model.browserPlus.getBrowserPlusUrl?(url)
       @htmlv.attr 'src',url
 
-  showDevTool: (evt)->
-    @toggleDevTool() if evt[0].keyIdentifier is "F12"
-
+  keyHandler: (evt)->
+    switch evt[0].keyIdentifier
+      when  "F12"
+        @toggleDevTool()
+      when "F5"
+        if evt[0].ctrlKey
+          @refreshPage(undefined,true)
+        else
+          @refreshPage()
 
   removeFav: (favorite)->
     favrs = window.bp.js.get('bp.fav')
@@ -497,11 +595,14 @@ class BrowserPlusView extends View
   serialize: ->
 
   destroy: ->
-    jQ(@url).autocomplete('destroy')
+    jQ(@url).autocomplete?('destroy')
     @subscriptions.dispose()
 
   @getJQuery: ->
     fs.readFileSync "#{@model.browserPlus.resources}/jquery-2.1.4.min.js",'utf-8'
+
+  @getEval: ->
+    fs.readFileSync "#{@model.browserPlus.resources}/eval.js",'utf-8'
 
   @getJStorage: ->
     fs.readFileSync "#{@model.browserPlus.resources}/jstorage.min.js",'utf-8'

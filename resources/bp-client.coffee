@@ -1,8 +1,7 @@
 document.addEventListener 'DOMContentLoaded', ->
   window.browserPlus = {}
-  window.onhashchange = (evt)->
-    console.log '~browser-plus-hrefchange~' + evt[0].newURL
-
+  # window.onhashchange = (evt)->
+  #   console.log '~browser-plus-hrefchange~' + evt.newURL
   browserPlus.menu = (menu) ->
     if !browserPlus.contextMenu
       browserPlus.contextMenu = jQuery("<ul id='bp-menu'></ul>")
@@ -59,9 +58,9 @@ document.addEventListener 'DOMContentLoaded', ->
       jQuery('body').on menu.keytype, menu.selector, menu.ctrlkey, eval('(' + menu.fn + ')')
     return
 
-  if location.href.startsWith('data:text/html,')
-  else
-    console.log '~browser-plus-href~' + location.href + ' ' + document.title
+  # if location.href.startsWith('data:text/html,')
+  # else
+  #   console.log '~browser-plus-href~' + location.href + ' ' + document.title
   if typeof jQuery == 'undefined'
     console.log '~browser-plus-jquery~'
   else
