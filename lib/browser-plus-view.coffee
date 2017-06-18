@@ -1,6 +1,5 @@
 {CompositeDisposable}  = require 'atom'
 {View,$} = require 'atom-space-pen-views'
-# $ = jQ = require '../node_modules/jquery/dist/jquery.js'
 $ = jQ = require 'jquery'
 require 'jquery-ui/autocomplete'
 path = require 'path'
@@ -37,7 +36,6 @@ class BrowserPlusView extends View
       hideURLBar = 'hideURLBar'
     if params.opt?.src
       params.src = BrowserPlusView.checkBase(params.opt.src,params.url)
-      # params.src = params.src.replace(/"/g,'&quot;')
       params.src = params.src.replace(/"/g,"'")
       unless params.src?.startsWith "data:text/html,"
         params.src = "data:text/html,#{params.src}"
@@ -135,39 +133,6 @@ class BrowserPlusView extends View
         e.request.allow()
 
       @htmlv[0]?.addEventListener "console-message", (e)=>
-        # if e.message.includes('~browser-plus-href~')
-        #   data = e.message.replace('~browser-plus-href~','')
-        #   indx = data.indexOf(' ')
-        #   url = data.substr(0,indx)
-        #   title = data.substr(indx + 1)
-        #   BrowserPlusModel = require './browser-plus-model'
-        #   unless BrowserPlusModel.checkUrl(url)
-        #     url = atom.config.get('browser-plus.homepage') or "http://www.google.com"
-        #     atom.notifications.addSuccess("Redirecting to #{url}")
-        #     @htmlv[0]?.executeJavaScript "location.href = '#{url}'"
-        #     return
-        #   if url and url isnt @model.url and not @url.val()?.startsWith 'browser-plus://'
-        #     @url.val url
-        #     @model.url = url
-        #   if title
-        #     # @model.browserPlus.title[@model.url] = title
-        #     @model.setTitle(title) if title isnt @model.getTitle()
-        #   else
-        #     # @model.browserPlus.title[@model.url] = url
-        #     @model.setTitle(url)
-        #
-        #   @live.toggleClass 'active',@liveOn
-        #   @liveSubscription?.dispose() unless @liveOn
-        #   @checkNav()
-        #   @checkFav()
-        #   @addHistory()
-
-        # if e.message.includes('~browser-plus-hrefchange~')
-        #   url = e.message.replace('~browser-plus-hrefchange~','')
-        #   if url and url isnt @model.url and not @url.val()?.startsWith 'browser-plus://'
-        #     @url.val url
-        #     @model.url = url
-        #     @addHistory()
         if e.message.includes('~browser-plus-position~') and @rememberOn
           data = e.message.replace('~browser-plus-position~','')
           indx = data.indexOf(',')
@@ -194,9 +159,6 @@ class BrowserPlusView extends View
                 jQuery(window).scrollTop(#{@curPos.top});
                 jQuery(window).scrollLeft(#{@curPos.left});
               """
-
-          # @model.browserPlus.evalJS ?= BrowserPlusView.getEval.call @
-          # @htmlv[0]?.executeJavaScript @model.browserPlus.evalJS
 
           @model.browserPlus.jStorageJS ?= BrowserPlusView.getJStorage.call @
           @htmlv[0]?.executeJavaScript @model.browserPlus.jStorageJS
@@ -226,13 +188,7 @@ class BrowserPlusView extends View
               menu.fn = menu.fn.toString() if menu.fn
               menu.selectorFilter = menu.selectorFilter.toString() if menu.selectorFilter
               @htmlv[0]?.executeJavaScript "browserPlus.menu(#{JSON.stringify(menu)})"
-          # @model.browserPlus.bpStyle ?= BrowserPlusView.getbpStyle.call @
-          # @htmlv[0]?.executeJavaScript """
-          #               node = document.createElement('style');
-          #               node.type='text/css';
-          #               node.innerHTML='#{@model.browserPlus.bpStyle}';
-          #               document.getElementsByTagName('head')[0].appendChild(node);
-          #               """
+
           @htmlv[0]?.executeJavaScript BrowserPlusView.loadCSS.call @,'bp-style.css'
           @htmlv[0]?.executeJavaScript BrowserPlusView.loadCSS.call @,'jquery.notifyBar.css'
 
@@ -291,19 +247,7 @@ class BrowserPlusView extends View
       @remember.on 'click', (evt)=>
         @rememberOn = !@rememberOn
         @remember.toggleClass('active',@rememberOn)
-        # if @rememberOn
-        #     @htmlv[0]?.executeJavaScript """
-        #         jQuery(window).on('beforeunload', function() {
-        #           var left, top;
-        #           top = jQuery(window).scrollTop();
-        #           left = jQuery(window).scrollLeft();
-        #           return console.log(`~browser-plus-position~${top},${left}`);
-        #         });
-        #       """
-        # else
-        #   @htmlv[0]?.executeJavaScript """
-        #     jQuery(window).off('beforeunload')
-        #     """
+
       @print.on 'click', (evt)=>
         @htmlv[0]?.print()
 
@@ -456,16 +400,6 @@ class BrowserPlusView extends View
         if @ultraLiveOn and @model.src
           @htmlv[0]?.src = @model.src
         else
-          # if @model.url.indexOf('#')
-          #   @model.hashurl = @model.url
-          #   indx = @model.url.indexOf('#')
-          #   baseurl = @model.url.substr(0,indx)
-          #   @htmlv[0]?.executeJavaScript """
-          #     location.href = '#{baseurl}'
-          #   """
-          # else
-          #   @model.hashurl = undefined
-          # @htmlv[0]?.executeJavaScript "location.href = '#{@model.url}'"
           if ignorecache
             @htmlv[0]?.reloadIgnoringCache()
           else
@@ -498,6 +432,13 @@ class BrowserPlusView extends View
           @refreshPage(undefined,true)
         else
           @refreshPage()
+      when "F10"
+        @toggleURLBar()
+      when "Left"
+        @goBack() if evt[0].altKey
+
+      when "Right"
+        @goForward() if evt[0].altKey
 
   removeFav: (favorite)->
     favrs = window.bp.js.get('bp.fav')
