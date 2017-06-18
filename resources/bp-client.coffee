@@ -1,5 +1,7 @@
 document.addEventListener 'DOMContentLoaded', ->
   window.browserPlus = {}
+  window.onhashchange = (evt)->
+    console.log '~browser-plus-hrefchange~' + evt[0].newURL
 
   browserPlus.menu = (menu) ->
     if !browserPlus.contextMenu

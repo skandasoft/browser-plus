@@ -7,6 +7,9 @@ path = require 'path'
 require 'JSON2'
 
 fs = require 'fs'
+require 'jstorage'
+window.bp = {}
+window.bp.js  = $.extend({},window.$.jStorage)
 
 RegExp.escape= (s)->
   s.replace /[-\/\\^$*+?.()|[\]{}]/g, '\\$&'
@@ -78,7 +81,6 @@ class BrowserPlusView extends View
         pattern = ///
                     #{RegExp.escape req.term}
                   ///i
-        require 'jstorage'
         fav = _.filter window.bp.js.get('bp.fav'),(fav)->
                       return fav.url.match(pattern) or fav.title.match(pattern)
         urls = _.pluck(fav,"url")
@@ -158,6 +160,13 @@ class BrowserPlusView extends View
           @checkFav()
           @addHistory()
 
+        if e.message.includes('~browser-plus-hrefchange~')
+          url = e.message.replace('~browser-plus-hrefchange~','')
+          if url and url isnt @model.url and not @url.val()?.startsWith 'browser-plus://'
+            @url.val url
+            @model.url = url
+            @addHistory()
+
         if e.message.includes('~browser-plus-jquery~') or e.message.includes('~browser-plus-menu~')
           if e.message.includes('~browser-plus-jquery~')
             @model.browserPlus.jQueryJS ?= BrowserPlusView.getJQuery.call @
@@ -165,6 +174,9 @@ class BrowserPlusView extends View
 
           @model.browserPlus.jStorageJS ?= BrowserPlusView.getJStorage.call @
           @htmlv[0]?.executeJavaScript @model.browserPlus.jStorageJS
+
+          @model.browserPlus.watchjs ?= BrowserPlusView.getWatchjs.call @
+          @htmlv[0]?.executeJavaScript @model.browserPlus.watchjs
 
           @model.browserPlus.hotKeys ?= BrowserPlusView.getHotKeys.call @
           @htmlv[0]?.executeJavaScript @model.browserPlus.hotKeys
@@ -201,7 +213,6 @@ class BrowserPlusView extends View
 
       @htmlv[0]?.addEventListener "page-favicon-updated", (e)=>
         _ = require 'lodash'
-        require 'jstorage'
         favr = window.bp.js.get('bp.fav')
         if fav = _.find( favr,{'url':@model.url} )
           fav.favIcon = e.favicons[0]
@@ -232,7 +243,6 @@ class BrowserPlusView extends View
       @htmlv[0]?.addEventListener "page-title-set", (e)=>
         # @model.browserPlus.title[@model.url] = e.title
         _ = require 'lodash'
-        require 'jstorage'
         favr = window.bp.js.get('bp.fav')
         title = window.bp.js.get('bp.title')
         uri = @htmlv[0].getURL()
@@ -317,7 +327,6 @@ class BrowserPlusView extends View
 
       @favList.on 'click', (evt)=>
         favList = require './fav-view'
-        require 'jstorage'
         new favList window.bp.js.get('bp.fav')
 
       @forward.on 'click', (evt)=>
@@ -393,7 +402,6 @@ class BrowserPlusView extends View
 
 
   removeFav: (favorite)->
-    require 'jstorage'
     favrs = window.bp.js.get('bp.fav')
     for favr,idx in favrs
       if favr.url is favorite.url
@@ -425,7 +433,6 @@ class BrowserPlusView extends View
 
   checkFav: ->
     @fav.removeClass 'active'
-    require 'jstorage'
     favrs = window.bp.js.get('bp.fav')
     for favr in favrs
       if favr.url is @model.url
@@ -469,7 +476,6 @@ class BrowserPlusView extends View
       dd = date.getDate().toString()
       yyyy + (if mm[1] then mm else '0' + mm[0]) + (if dd[1] then dd else '0' + dd[0])
     today = yyyymmdd()
-    require 'jstorage'
     history = window.bp.js.get('bp.history') or []
     # return unless history or history.length = 0
     todayObj = history.find (ele,idx,arr)->
@@ -499,6 +505,9 @@ class BrowserPlusView extends View
 
   @getJStorage: ->
     fs.readFileSync "#{@model.browserPlus.resources}/jstorage.min.js",'utf-8'
+
+  @getWatchjs: ->
+    fs.readFileSync "#{@model.browserPlus.resources}/watch.js",'utf-8'
 
   @getNotifyBar: ->
     fs.readFileSync "#{@model.browserPlus.resources}/jquery.notifyBar.js",'utf-8'
