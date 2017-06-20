@@ -60,7 +60,7 @@ class BrowserPlusView extends View
             # @span id:'pdf',class:'mega-octicon octicon-file-pdf',outlet: 'pdf'
             @span id:'newTab', class:'octicon',outlet: 'newTab', "\u2795"
             @span id:'print',class:'icon-browser-pluss icon-print',outlet: 'print'
-            @span id:'live',class:'mega-octicon octicon-pin',outlet:'remember'
+            @span id:'remember',class:'mega-octicon octicon-pin',outlet:'remember'
             @span id:'live',class:'mega-octicon octicon-zap',outlet:'live'
             @span id:'devtool',class:'mega-octicon octicon-tools',outlet:'devtool'
 
@@ -244,6 +244,9 @@ class BrowserPlusView extends View
       @devtool.on 'click', (evt)=>
         @toggleDevTool()
 
+      @spinner.on 'click', (evt)=>
+        @htmlv[0]?.stop()
+
       @remember.on 'click', (evt)=>
         @rememberOn = !@rememberOn
         @remember.toggleClass('active',@rememberOn)
@@ -356,6 +359,8 @@ class BrowserPlusView extends View
       @refresh.on 'click', (evt)=>
         @refreshPage()
 
+      # @mobile.on 'click', (evt)=>
+      #   @htmlv[0]?.setUserAgent("Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3134.0 Mobile Safari/537.36")
 
   updatePageUrl: (evt) ->
       BrowserPlusModel = require './browser-plus-model'
@@ -397,9 +402,10 @@ class BrowserPlusView extends View
         if url
           @model.url = url
           @url.val url
-        if @ultraLiveOn and @model.src
-          @htmlv[0]?.src = @model.src
+          @htmlv[0]?.src = url
         else
+          if @ultraLiveOn and @model.src
+            @htmlv[0]?.src = @model.src
           if ignorecache
             @htmlv[0]?.reloadIgnoringCache()
           else
@@ -527,7 +533,6 @@ class BrowserPlusView extends View
     else
       histToday = todayObj[today]
     histToday.unshift date: (new Date().toString()),uri: url
-    # @ss.set('bp.history',history)
     window.bp.js.set('bp.history',history)
 
   getTitle: ->
