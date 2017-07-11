@@ -21,7 +21,7 @@ module.exports =
           if menu.selector is 'atom-pane'
             for item in menu.items
               item.shouldDisplay = (evt)->
-                return false if event.target?.constructor?.name = 'webview'
+                return false if evt.target?.constructor?.name = 'webview'
                 return true
 
     getViewClass: ->
