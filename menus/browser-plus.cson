@@ -6,4 +6,21 @@
       'command': 'browser-plus:open'
     }
 
-  ]
+  ],
+"menu": [
+  {
+    "label": "Packages",
+    "submenu": [
+      {
+        "label": "Browser Plus",
+        # Leave in sub-menu so we can add more later.
+        "submenu": [
+          {
+            "label": "Open Browser Plus",
+            "command": "browser-plus:open"
+          }
+        ]
+      }
+    ]
+  }
+]
